@@ -113,14 +113,14 @@ function renderDetail(d){
  '<div class="metric"><div class="metric-label">Price</div><div class="metric-value">'+(d.price?'
  '</div>'+
  '<div class="research-section"><h3>Research Signals</h3><div class="signal-grid">'+
- '<div class="signal-card"><div class="signal-label">12M Forecast</div><div class="signal-value">'+esc(d.forecast||"—")+'</div></div>'+
+ 
  '<div class="signal-card"><div class="signal-label">Smart Score</div><div class="signal-value">'+d.smartScore+'/10</div><div class="score-meter"><span class="score-marker" style="left:'+Math.max(0,Math.min(100,((d.smartScore||1)-1)/9*100))+'%"></span></div></div>'+
  '<div class="signal-card"><div class="signal-label">Hedge Fund Trend</div><div class="signal-value">'+esc(d.hedgeFund||"—")+'</div></div>'+
  '<div class="signal-card"><div class="signal-label">Insider Trend</div><div class="signal-value">'+esc(d.insider||"—")+'</div></div>'+
  '<div class="signal-card"><div class="signal-label">Investor Trend</div><div class="signal-value">'+esc(d.investorTrend||"—")+'</div></div>'+
  '<div class="signal-card"><div class="signal-label">News Trend</div><div class="signal-value">'+esc(d.newsTrend||"—")+'</div></div>'+
- '<div class="signal-card"><div class="signal-label">Technicals</div><div class="signal-value">'+esc(d.technicals||"—")+'</div></div>'+
- '<div class="signal-card"><div class="signal-label">12M Momentum</div><div class="signal-value">'+(d.momentum?Number(d.momentum).toFixed(2)+'%':'—')+'</div></div>'+
+ 
+ 
  '<div class="signal-card"><div class="signal-label">Shares Owned</div><div class="signal-value">'+(d.sharesOwned?Number(d.sharesOwned).toLocaleString(undefined,{maximumFractionDigits:4}):'—')+'</div></div>'+
  '<div class="signal-card"><div class="signal-label">Current Value</div><div class="signal-value">'+(d.currentValue?'
  '</div></div>'+
@@ -149,11 +149,8 @@ function formValues(){return{
  price:Number(q("#sPrice").value)||0,
  sharesOwned:Number(q("#sShares").value)||0,
  currentValue:Number(q("#sCurrentValue").value)||0,
- forecast:q("#sForecast").value,
  insider:q("#sInsider").value,
  newsTrend:q("#sNewsTrend").value,
- technicals:q("#sTechnicals").value,
- momentum:Number(q("#sMomentum").value)||0,
 
  analystHigh:Number(q("#sAnalystHigh").value)||0,
  analystAvg:Number(q("#sAnalystAvg").value)||0,
@@ -170,8 +167,8 @@ function beginEdit(id){
  q("#stockSubmitBtn").textContent="Save Changes";
  q("#sTicker").value=d.ticker;q("#sCompany").value=d.company;q("#sSector").value=d.sector;q("#sStatus").value=d.status;
  q("#sSmartScorePrimary").value=d.smartScore||5;q("#sInvestorPrimary").value=d.investorTrend||"Negative";q("#sHedgePrimary").value=d.hedgeFund||"Negative";
- q("#sPrice").value=d.price||"";q("#sShares").value=d.sharesOwned||"";q("#sCurrentValue").value=d.currentValue||"";q("#sForecast").value=d.forecast||"Neutral";q("#sInsider").value=d.insider||"Neutral";
- q("#sNewsTrend").value=d.newsTrend||"Neutral";q("#sTechnicals").value=d.technicals||"Neutral";q("#sMomentum").value=d.momentum||"";
+ q("#sPrice").value=d.price||"";q("#sShares").value=d.sharesOwned||"";q("#sCurrentValue").value=d.currentValue||"";q("#sInsider").value=d.insider||"Neutral";
+ q("#sNewsTrend").value=d.newsTrend||"Neutral";
  q("#sAnalystHigh").value=d.analystHigh||"";q("#sAnalystAvg").value=d.analystAvg||"";q("#sAnalystLow").value=d.analystLow||"";
  q("#sThesis").value=d.thesis;q("#sCatalyst").value=d.catalyst||"";
  q("#stockMessage").textContent="Editing "+d.ticker+". Save changes to replace this entry.";
@@ -235,16 +232,16 @@ function renderDetail(d){
  '<div class="metric"><div class="metric-label">Target</div><div class="metric-value">'+(d.target?'$'+Number(d.target).toFixed(2):'—')+'</div></div>'+
  '</div>'+
  '<div class="research-section"><h3>Research Signals</h3><div class="signal-grid">'+
- '<div class="signal-card"><div class="signal-label">12M Forecast</div><div class="signal-value">'+esc(d.forecast||"—")+'</div></div>'+
+ 
  '<div class="signal-card"><div class="signal-label">Smart Score</div><div class="signal-value">'+d.smartScore+'/10</div><div class="score-meter"><span class="score-marker" style="left:'+Math.max(0,Math.min(100,((d.smartScore||1)-1)/9*100))+'%"></span></div></div>'+
  '<div class="signal-card"><div class="signal-label">Hedge Fund Trend</div><div class="signal-value">'+esc(d.hedgeFund||"—")+'</div></div>'+
  '<div class="signal-card"><div class="signal-label">Insider Trend</div><div class="signal-value">'+esc(d.insider||"—")+'</div></div>'+
  '<div class="signal-card"><div class="signal-label">Investor Trend</div><div class="signal-value">'+esc(d.investorTrend||"—")+'</div></div>'+
  '<div class="signal-card"><div class="signal-label">News Trend</div><div class="signal-value">'+esc(d.newsTrend||"—")+'</div></div>'+
- '<div class="signal-card"><div class="signal-label">Technicals</div><div class="signal-value">'+esc(d.technicals||"—")+'</div></div>'+
- '<div class="signal-card"><div class="signal-label">12M Momentum</div><div class="signal-value">'+(d.momentum?Number(d.momentum).toFixed(2)+'%':'—')+'</div></div>'+
- '<div class="signal-card"><div class="signal-label">Return on Equity</div><div class="signal-value">'+(d.roe?Number(d.roe).toFixed(2)+'%':'—')+'</div></div>'+
- '<div class="signal-card"><div class="signal-label">Asset Growth</div><div class="signal-value">'+(d.assetGrowth?Number(d.assetGrowth).toFixed(2)+'%':'—')+'</div></div>'+
+ 
+ 
+ 
+ 
  '</div></div>'+
  '<div class="research-section"><h3>Analyst 12-Month Targets</h3><div class="forecast-range">'+
  '<div class="forecast-item">Low<strong>'+(d.analystLow?'$'+Number(d.analystLow).toFixed(2):'—')+'</strong></div>'+
@@ -269,14 +266,8 @@ function formValues(){return{
  investorTrend:q("#sInvestorPrimary").value,
  hedgeFund:q("#sHedgePrimary").value,
  price:Number(q("#sPrice").value)||0,
- target:Number(q("#sTarget").value)||0,
- forecast:q("#sForecast").value,
  insider:q("#sInsider").value,
  newsTrend:q("#sNewsTrend").value,
- technicals:q("#sTechnicals").value,
- momentum:Number(q("#sMomentum").value)||0,
- roe:Number(q("#sROE").value)||0,
- assetGrowth:Number(q("#sAssetGrowth").value)||0,
  analystHigh:Number(q("#sAnalystHigh").value)||0,
  analystAvg:Number(q("#sAnalystAvg").value)||0,
  analystLow:Number(q("#sAnalystLow").value)||0,
@@ -292,9 +283,9 @@ function beginEdit(id){
  q("#stockSubmitBtn").textContent="Save Changes";
  q("#sTicker").value=d.ticker;q("#sCompany").value=d.company;q("#sSector").value=d.sector;q("#sStatus").value=d.status;
  q("#sSmartScorePrimary").value=d.smartScore||5;q("#sInvestorPrimary").value=d.investorTrend||"Negative";q("#sHedgePrimary").value=d.hedgeFund||"Negative";
- q("#sPrice").value=d.price||"";q("#sTarget").value=d.target||"";q("#sForecast").value=d.forecast||"Neutral";q("#sInsider").value=d.insider||"Neutral";
- q("#sNewsTrend").value=d.newsTrend||"Neutral";q("#sTechnicals").value=d.technicals||"Neutral";q("#sMomentum").value=d.momentum||"";q("#sROE").value=d.roe||"";
- q("#sAssetGrowth").value=d.assetGrowth||"";q("#sAnalystHigh").value=d.analystHigh||"";q("#sAnalystAvg").value=d.analystAvg||"";q("#sAnalystLow").value=d.analystLow||"";
+ q("#sPrice").value=d.price||"";q("#sInsider").value=d.insider||"Neutral";
+ q("#sNewsTrend").value=d.newsTrend||"Neutral";
+ q("#sAnalystHigh").value=d.analystHigh||"";q("#sAnalystAvg").value=d.analystAvg||"";q("#sAnalystLow").value=d.analystLow||"";
  q("#sThesis").value=d.thesis;q("#sCatalyst").value=d.catalyst||"";
  q("#stockMessage").textContent="Editing "+d.ticker+". Save changes to replace this entry.";
  q("#stockForm").scrollIntoView({behavior:"smooth",block:"start"});
@@ -330,16 +321,16 @@ syncFilterOptions();render();renderDetail(data[0]);+Number(d.price).toFixed(2):'
  '<div class="metric"><div class="metric-label">Current Value</div><div class="metric-value">'+(d.currentValue?'
  '</div>'+
  '<div class="research-section"><h3>Research Signals</h3><div class="signal-grid">'+
- '<div class="signal-card"><div class="signal-label">12M Forecast</div><div class="signal-value">'+esc(d.forecast||"—")+'</div></div>'+
+ 
  '<div class="signal-card"><div class="signal-label">Smart Score</div><div class="signal-value">'+d.smartScore+'/10</div><div class="score-meter"><span class="score-marker" style="left:'+Math.max(0,Math.min(100,((d.smartScore||1)-1)/9*100))+'%"></span></div></div>'+
  '<div class="signal-card"><div class="signal-label">Hedge Fund Trend</div><div class="signal-value">'+esc(d.hedgeFund||"—")+'</div></div>'+
  '<div class="signal-card"><div class="signal-label">Insider Trend</div><div class="signal-value">'+esc(d.insider||"—")+'</div></div>'+
  '<div class="signal-card"><div class="signal-label">Investor Trend</div><div class="signal-value">'+esc(d.investorTrend||"—")+'</div></div>'+
  '<div class="signal-card"><div class="signal-label">News Trend</div><div class="signal-value">'+esc(d.newsTrend||"—")+'</div></div>'+
- '<div class="signal-card"><div class="signal-label">Technicals</div><div class="signal-value">'+esc(d.technicals||"—")+'</div></div>'+
- '<div class="signal-card"><div class="signal-label">12M Momentum</div><div class="signal-value">'+(d.momentum?Number(d.momentum).toFixed(2)+'%':'—')+'</div></div>'+
- '<div class="signal-card"><div class="signal-label">Return on Equity</div><div class="signal-value">'+(d.roe?Number(d.roe).toFixed(2)+'%':'—')+'</div></div>'+
- '<div class="signal-card"><div class="signal-label">Asset Growth</div><div class="signal-value">'+(d.assetGrowth?Number(d.assetGrowth).toFixed(2)+'%':'—')+'</div></div>'+
+ 
+ 
+ 
+ 
  '</div></div>'+
  '<div class="research-section"><h3>Analyst 12-Month Targets</h3><div class="forecast-range">'+
  '<div class="forecast-item">Low<strong>'+(d.analystLow?'$'+Number(d.analystLow).toFixed(2):'—')+'</strong></div>'+
@@ -364,14 +355,8 @@ function formValues(){return{
  investorTrend:q("#sInvestorPrimary").value,
  hedgeFund:q("#sHedgePrimary").value,
  price:Number(q("#sPrice").value)||0,
- target:Number(q("#sTarget").value)||0,
- forecast:q("#sForecast").value,
  insider:q("#sInsider").value,
  newsTrend:q("#sNewsTrend").value,
- technicals:q("#sTechnicals").value,
- momentum:Number(q("#sMomentum").value)||0,
- roe:Number(q("#sROE").value)||0,
- assetGrowth:Number(q("#sAssetGrowth").value)||0,
  analystHigh:Number(q("#sAnalystHigh").value)||0,
  analystAvg:Number(q("#sAnalystAvg").value)||0,
  analystLow:Number(q("#sAnalystLow").value)||0,
@@ -387,9 +372,9 @@ function beginEdit(id){
  q("#stockSubmitBtn").textContent="Save Changes";
  q("#sTicker").value=d.ticker;q("#sCompany").value=d.company;q("#sSector").value=d.sector;q("#sStatus").value=d.status;
  q("#sSmartScorePrimary").value=d.smartScore||5;q("#sInvestorPrimary").value=d.investorTrend||"Negative";q("#sHedgePrimary").value=d.hedgeFund||"Negative";
- q("#sPrice").value=d.price||"";q("#sTarget").value=d.target||"";q("#sForecast").value=d.forecast||"Neutral";q("#sInsider").value=d.insider||"Neutral";
- q("#sNewsTrend").value=d.newsTrend||"Neutral";q("#sTechnicals").value=d.technicals||"Neutral";q("#sMomentum").value=d.momentum||"";q("#sROE").value=d.roe||"";
- q("#sAssetGrowth").value=d.assetGrowth||"";q("#sAnalystHigh").value=d.analystHigh||"";q("#sAnalystAvg").value=d.analystAvg||"";q("#sAnalystLow").value=d.analystLow||"";
+ q("#sPrice").value=d.price||"";q("#sInsider").value=d.insider||"Neutral";
+ q("#sNewsTrend").value=d.newsTrend||"Neutral";
+ q("#sAnalystHigh").value=d.analystHigh||"";q("#sAnalystAvg").value=d.analystAvg||"";q("#sAnalystLow").value=d.analystLow||"";
  q("#sThesis").value=d.thesis;q("#sCatalyst").value=d.catalyst||"";
  q("#stockMessage").textContent="Editing "+d.ticker+". Save changes to replace this entry.";
  q("#stockForm").scrollIntoView({behavior:"smooth",block:"start"});
@@ -452,16 +437,16 @@ function renderDetail(d){
  '<div class="metric"><div class="metric-label">Target</div><div class="metric-value">'+(d.target?'$'+Number(d.target).toFixed(2):'—')+'</div></div>'+
  '</div>'+
  '<div class="research-section"><h3>Research Signals</h3><div class="signal-grid">'+
- '<div class="signal-card"><div class="signal-label">12M Forecast</div><div class="signal-value">'+esc(d.forecast||"—")+'</div></div>'+
+ 
  '<div class="signal-card"><div class="signal-label">Smart Score</div><div class="signal-value">'+d.smartScore+'/10</div><div class="score-meter"><span class="score-marker" style="left:'+Math.max(0,Math.min(100,((d.smartScore||1)-1)/9*100))+'%"></span></div></div>'+
  '<div class="signal-card"><div class="signal-label">Hedge Fund Trend</div><div class="signal-value">'+esc(d.hedgeFund||"—")+'</div></div>'+
  '<div class="signal-card"><div class="signal-label">Insider Trend</div><div class="signal-value">'+esc(d.insider||"—")+'</div></div>'+
  '<div class="signal-card"><div class="signal-label">Investor Trend</div><div class="signal-value">'+esc(d.investorTrend||"—")+'</div></div>'+
  '<div class="signal-card"><div class="signal-label">News Trend</div><div class="signal-value">'+esc(d.newsTrend||"—")+'</div></div>'+
- '<div class="signal-card"><div class="signal-label">Technicals</div><div class="signal-value">'+esc(d.technicals||"—")+'</div></div>'+
- '<div class="signal-card"><div class="signal-label">12M Momentum</div><div class="signal-value">'+(d.momentum?Number(d.momentum).toFixed(2)+'%':'—')+'</div></div>'+
- '<div class="signal-card"><div class="signal-label">Return on Equity</div><div class="signal-value">'+(d.roe?Number(d.roe).toFixed(2)+'%':'—')+'</div></div>'+
- '<div class="signal-card"><div class="signal-label">Asset Growth</div><div class="signal-value">'+(d.assetGrowth?Number(d.assetGrowth).toFixed(2)+'%':'—')+'</div></div>'+
+ 
+ 
+ 
+ 
  '</div></div>'+
  '<div class="research-section"><h3>Analyst 12-Month Targets</h3><div class="forecast-range">'+
  '<div class="forecast-item">Low<strong>'+(d.analystLow?'$'+Number(d.analystLow).toFixed(2):'—')+'</strong></div>'+
@@ -486,14 +471,8 @@ function formValues(){return{
  investorTrend:q("#sInvestorPrimary").value,
  hedgeFund:q("#sHedgePrimary").value,
  price:Number(q("#sPrice").value)||0,
- target:Number(q("#sTarget").value)||0,
- forecast:q("#sForecast").value,
  insider:q("#sInsider").value,
  newsTrend:q("#sNewsTrend").value,
- technicals:q("#sTechnicals").value,
- momentum:Number(q("#sMomentum").value)||0,
- roe:Number(q("#sROE").value)||0,
- assetGrowth:Number(q("#sAssetGrowth").value)||0,
  analystHigh:Number(q("#sAnalystHigh").value)||0,
  analystAvg:Number(q("#sAnalystAvg").value)||0,
  analystLow:Number(q("#sAnalystLow").value)||0,
@@ -509,9 +488,9 @@ function beginEdit(id){
  q("#stockSubmitBtn").textContent="Save Changes";
  q("#sTicker").value=d.ticker;q("#sCompany").value=d.company;q("#sSector").value=d.sector;q("#sStatus").value=d.status;
  q("#sSmartScorePrimary").value=d.smartScore||5;q("#sInvestorPrimary").value=d.investorTrend||"Negative";q("#sHedgePrimary").value=d.hedgeFund||"Negative";
- q("#sPrice").value=d.price||"";q("#sTarget").value=d.target||"";q("#sForecast").value=d.forecast||"Neutral";q("#sInsider").value=d.insider||"Neutral";
- q("#sNewsTrend").value=d.newsTrend||"Neutral";q("#sTechnicals").value=d.technicals||"Neutral";q("#sMomentum").value=d.momentum||"";q("#sROE").value=d.roe||"";
- q("#sAssetGrowth").value=d.assetGrowth||"";q("#sAnalystHigh").value=d.analystHigh||"";q("#sAnalystAvg").value=d.analystAvg||"";q("#sAnalystLow").value=d.analystLow||"";
+ q("#sPrice").value=d.price||"";q("#sInsider").value=d.insider||"Neutral";
+ q("#sNewsTrend").value=d.newsTrend||"Neutral";
+ q("#sAnalystHigh").value=d.analystHigh||"";q("#sAnalystAvg").value=d.analystAvg||"";q("#sAnalystLow").value=d.analystLow||"";
  q("#sThesis").value=d.thesis;q("#sCatalyst").value=d.catalyst||"";
  q("#stockMessage").textContent="Editing "+d.ticker+". Save changes to replace this entry.";
  q("#stockForm").scrollIntoView({behavior:"smooth",block:"start"});
@@ -545,16 +524,16 @@ q("#stockForm").addEventListener("submit",e=>{
 syncFilterOptions();render();renderDetail(data[0]);+Number(d.currentValue).toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2}):'—')+'</div></div>'+
  '</div>'+
  '<div class="research-section"><h3>Research Signals</h3><div class="signal-grid">'+
- '<div class="signal-card"><div class="signal-label">12M Forecast</div><div class="signal-value">'+esc(d.forecast||"—")+'</div></div>'+
+ 
  '<div class="signal-card"><div class="signal-label">Smart Score</div><div class="signal-value">'+d.smartScore+'/10</div><div class="score-meter"><span class="score-marker" style="left:'+Math.max(0,Math.min(100,((d.smartScore||1)-1)/9*100))+'%"></span></div></div>'+
  '<div class="signal-card"><div class="signal-label">Hedge Fund Trend</div><div class="signal-value">'+esc(d.hedgeFund||"—")+'</div></div>'+
  '<div class="signal-card"><div class="signal-label">Insider Trend</div><div class="signal-value">'+esc(d.insider||"—")+'</div></div>'+
  '<div class="signal-card"><div class="signal-label">Investor Trend</div><div class="signal-value">'+esc(d.investorTrend||"—")+'</div></div>'+
  '<div class="signal-card"><div class="signal-label">News Trend</div><div class="signal-value">'+esc(d.newsTrend||"—")+'</div></div>'+
- '<div class="signal-card"><div class="signal-label">Technicals</div><div class="signal-value">'+esc(d.technicals||"—")+'</div></div>'+
- '<div class="signal-card"><div class="signal-label">12M Momentum</div><div class="signal-value">'+(d.momentum?Number(d.momentum).toFixed(2)+'%':'—')+'</div></div>'+
- '<div class="signal-card"><div class="signal-label">Return on Equity</div><div class="signal-value">'+(d.roe?Number(d.roe).toFixed(2)+'%':'—')+'</div></div>'+
- '<div class="signal-card"><div class="signal-label">Asset Growth</div><div class="signal-value">'+(d.assetGrowth?Number(d.assetGrowth).toFixed(2)+'%':'—')+'</div></div>'+
+ 
+ 
+ 
+ 
  '</div></div>'+
  '<div class="research-section"><h3>Analyst 12-Month Targets</h3><div class="forecast-range">'+
  '<div class="forecast-item">Low<strong>'+(d.analystLow?'$'+Number(d.analystLow).toFixed(2):'—')+'</strong></div>'+
@@ -579,14 +558,8 @@ function formValues(){return{
  investorTrend:q("#sInvestorPrimary").value,
  hedgeFund:q("#sHedgePrimary").value,
  price:Number(q("#sPrice").value)||0,
- target:Number(q("#sTarget").value)||0,
- forecast:q("#sForecast").value,
  insider:q("#sInsider").value,
  newsTrend:q("#sNewsTrend").value,
- technicals:q("#sTechnicals").value,
- momentum:Number(q("#sMomentum").value)||0,
- roe:Number(q("#sROE").value)||0,
- assetGrowth:Number(q("#sAssetGrowth").value)||0,
  analystHigh:Number(q("#sAnalystHigh").value)||0,
  analystAvg:Number(q("#sAnalystAvg").value)||0,
  analystLow:Number(q("#sAnalystLow").value)||0,
@@ -602,9 +575,9 @@ function beginEdit(id){
  q("#stockSubmitBtn").textContent="Save Changes";
  q("#sTicker").value=d.ticker;q("#sCompany").value=d.company;q("#sSector").value=d.sector;q("#sStatus").value=d.status;
  q("#sSmartScorePrimary").value=d.smartScore||5;q("#sInvestorPrimary").value=d.investorTrend||"Negative";q("#sHedgePrimary").value=d.hedgeFund||"Negative";
- q("#sPrice").value=d.price||"";q("#sTarget").value=d.target||"";q("#sForecast").value=d.forecast||"Neutral";q("#sInsider").value=d.insider||"Neutral";
- q("#sNewsTrend").value=d.newsTrend||"Neutral";q("#sTechnicals").value=d.technicals||"Neutral";q("#sMomentum").value=d.momentum||"";q("#sROE").value=d.roe||"";
- q("#sAssetGrowth").value=d.assetGrowth||"";q("#sAnalystHigh").value=d.analystHigh||"";q("#sAnalystAvg").value=d.analystAvg||"";q("#sAnalystLow").value=d.analystLow||"";
+ q("#sPrice").value=d.price||"";q("#sInsider").value=d.insider||"Neutral";
+ q("#sNewsTrend").value=d.newsTrend||"Neutral";
+ q("#sAnalystHigh").value=d.analystHigh||"";q("#sAnalystAvg").value=d.analystAvg||"";q("#sAnalystLow").value=d.analystLow||"";
  q("#sThesis").value=d.thesis;q("#sCatalyst").value=d.catalyst||"";
  q("#stockMessage").textContent="Editing "+d.ticker+". Save changes to replace this entry.";
  q("#stockForm").scrollIntoView({behavior:"smooth",block:"start"});
@@ -667,16 +640,16 @@ function renderDetail(d){
  '<div class="metric"><div class="metric-label">Target</div><div class="metric-value">'+(d.target?'$'+Number(d.target).toFixed(2):'—')+'</div></div>'+
  '</div>'+
  '<div class="research-section"><h3>Research Signals</h3><div class="signal-grid">'+
- '<div class="signal-card"><div class="signal-label">12M Forecast</div><div class="signal-value">'+esc(d.forecast||"—")+'</div></div>'+
+ 
  '<div class="signal-card"><div class="signal-label">Smart Score</div><div class="signal-value">'+d.smartScore+'/10</div><div class="score-meter"><span class="score-marker" style="left:'+Math.max(0,Math.min(100,((d.smartScore||1)-1)/9*100))+'%"></span></div></div>'+
  '<div class="signal-card"><div class="signal-label">Hedge Fund Trend</div><div class="signal-value">'+esc(d.hedgeFund||"—")+'</div></div>'+
  '<div class="signal-card"><div class="signal-label">Insider Trend</div><div class="signal-value">'+esc(d.insider||"—")+'</div></div>'+
  '<div class="signal-card"><div class="signal-label">Investor Trend</div><div class="signal-value">'+esc(d.investorTrend||"—")+'</div></div>'+
  '<div class="signal-card"><div class="signal-label">News Trend</div><div class="signal-value">'+esc(d.newsTrend||"—")+'</div></div>'+
- '<div class="signal-card"><div class="signal-label">Technicals</div><div class="signal-value">'+esc(d.technicals||"—")+'</div></div>'+
- '<div class="signal-card"><div class="signal-label">12M Momentum</div><div class="signal-value">'+(d.momentum?Number(d.momentum).toFixed(2)+'%':'—')+'</div></div>'+
- '<div class="signal-card"><div class="signal-label">Return on Equity</div><div class="signal-value">'+(d.roe?Number(d.roe).toFixed(2)+'%':'—')+'</div></div>'+
- '<div class="signal-card"><div class="signal-label">Asset Growth</div><div class="signal-value">'+(d.assetGrowth?Number(d.assetGrowth).toFixed(2)+'%':'—')+'</div></div>'+
+ 
+ 
+ 
+ 
  '</div></div>'+
  '<div class="research-section"><h3>Analyst 12-Month Targets</h3><div class="forecast-range">'+
  '<div class="forecast-item">Low<strong>'+(d.analystLow?'$'+Number(d.analystLow).toFixed(2):'—')+'</strong></div>'+
@@ -701,14 +674,8 @@ function formValues(){return{
  investorTrend:q("#sInvestorPrimary").value,
  hedgeFund:q("#sHedgePrimary").value,
  price:Number(q("#sPrice").value)||0,
- target:Number(q("#sTarget").value)||0,
- forecast:q("#sForecast").value,
  insider:q("#sInsider").value,
  newsTrend:q("#sNewsTrend").value,
- technicals:q("#sTechnicals").value,
- momentum:Number(q("#sMomentum").value)||0,
- roe:Number(q("#sROE").value)||0,
- assetGrowth:Number(q("#sAssetGrowth").value)||0,
  analystHigh:Number(q("#sAnalystHigh").value)||0,
  analystAvg:Number(q("#sAnalystAvg").value)||0,
  analystLow:Number(q("#sAnalystLow").value)||0,
@@ -724,9 +691,9 @@ function beginEdit(id){
  q("#stockSubmitBtn").textContent="Save Changes";
  q("#sTicker").value=d.ticker;q("#sCompany").value=d.company;q("#sSector").value=d.sector;q("#sStatus").value=d.status;
  q("#sSmartScorePrimary").value=d.smartScore||5;q("#sInvestorPrimary").value=d.investorTrend||"Negative";q("#sHedgePrimary").value=d.hedgeFund||"Negative";
- q("#sPrice").value=d.price||"";q("#sTarget").value=d.target||"";q("#sForecast").value=d.forecast||"Neutral";q("#sInsider").value=d.insider||"Neutral";
- q("#sNewsTrend").value=d.newsTrend||"Neutral";q("#sTechnicals").value=d.technicals||"Neutral";q("#sMomentum").value=d.momentum||"";q("#sROE").value=d.roe||"";
- q("#sAssetGrowth").value=d.assetGrowth||"";q("#sAnalystHigh").value=d.analystHigh||"";q("#sAnalystAvg").value=d.analystAvg||"";q("#sAnalystLow").value=d.analystLow||"";
+ q("#sPrice").value=d.price||"";q("#sInsider").value=d.insider||"Neutral";
+ q("#sNewsTrend").value=d.newsTrend||"Neutral";
+ q("#sAnalystHigh").value=d.analystHigh||"";q("#sAnalystAvg").value=d.analystAvg||"";q("#sAnalystLow").value=d.analystLow||"";
  q("#sThesis").value=d.thesis;q("#sCatalyst").value=d.catalyst||"";
  q("#stockMessage").textContent="Editing "+d.ticker+". Save changes to replace this entry.";
  q("#stockForm").scrollIntoView({behavior:"smooth",block:"start"});
@@ -782,14 +749,8 @@ function formValues(){return{
  investorTrend:q("#sInvestorPrimary").value,
  hedgeFund:q("#sHedgePrimary").value,
  price:Number(q("#sPrice").value)||0,
- target:Number(q("#sTarget").value)||0,
- forecast:q("#sForecast").value,
  insider:q("#sInsider").value,
  newsTrend:q("#sNewsTrend").value,
- technicals:q("#sTechnicals").value,
- momentum:Number(q("#sMomentum").value)||0,
- roe:Number(q("#sROE").value)||0,
- assetGrowth:Number(q("#sAssetGrowth").value)||0,
  analystHigh:Number(q("#sAnalystHigh").value)||0,
  analystAvg:Number(q("#sAnalystAvg").value)||0,
  analystLow:Number(q("#sAnalystLow").value)||0,
@@ -805,9 +766,9 @@ function beginEdit(id){
  q("#stockSubmitBtn").textContent="Save Changes";
  q("#sTicker").value=d.ticker;q("#sCompany").value=d.company;q("#sSector").value=d.sector;q("#sStatus").value=d.status;
  q("#sSmartScorePrimary").value=d.smartScore||5;q("#sInvestorPrimary").value=d.investorTrend||"Negative";q("#sHedgePrimary").value=d.hedgeFund||"Negative";
- q("#sPrice").value=d.price||"";q("#sTarget").value=d.target||"";q("#sForecast").value=d.forecast||"Neutral";q("#sInsider").value=d.insider||"Neutral";
- q("#sNewsTrend").value=d.newsTrend||"Neutral";q("#sTechnicals").value=d.technicals||"Neutral";q("#sMomentum").value=d.momentum||"";q("#sROE").value=d.roe||"";
- q("#sAssetGrowth").value=d.assetGrowth||"";q("#sAnalystHigh").value=d.analystHigh||"";q("#sAnalystAvg").value=d.analystAvg||"";q("#sAnalystLow").value=d.analystLow||"";
+ q("#sPrice").value=d.price||"";q("#sInsider").value=d.insider||"Neutral";
+ q("#sNewsTrend").value=d.newsTrend||"Neutral";
+ q("#sAnalystHigh").value=d.analystHigh||"";q("#sAnalystAvg").value=d.analystAvg||"";q("#sAnalystLow").value=d.analystLow||"";
  q("#sThesis").value=d.thesis;q("#sCatalyst").value=d.catalyst||"";
  q("#stockMessage").textContent="Editing "+d.ticker+". Save changes to replace this entry.";
  q("#stockForm").scrollIntoView({behavior:"smooth",block:"start"});
@@ -870,16 +831,16 @@ function renderDetail(d){
  '<div class="metric"><div class="metric-label">Target</div><div class="metric-value">'+(d.target?'$'+Number(d.target).toFixed(2):'—')+'</div></div>'+
  '</div>'+
  '<div class="research-section"><h3>Research Signals</h3><div class="signal-grid">'+
- '<div class="signal-card"><div class="signal-label">12M Forecast</div><div class="signal-value">'+esc(d.forecast||"—")+'</div></div>'+
+ 
  '<div class="signal-card"><div class="signal-label">Smart Score</div><div class="signal-value">'+d.smartScore+'/10</div><div class="score-meter"><span class="score-marker" style="left:'+Math.max(0,Math.min(100,((d.smartScore||1)-1)/9*100))+'%"></span></div></div>'+
  '<div class="signal-card"><div class="signal-label">Hedge Fund Trend</div><div class="signal-value">'+esc(d.hedgeFund||"—")+'</div></div>'+
  '<div class="signal-card"><div class="signal-label">Insider Trend</div><div class="signal-value">'+esc(d.insider||"—")+'</div></div>'+
  '<div class="signal-card"><div class="signal-label">Investor Trend</div><div class="signal-value">'+esc(d.investorTrend||"—")+'</div></div>'+
  '<div class="signal-card"><div class="signal-label">News Trend</div><div class="signal-value">'+esc(d.newsTrend||"—")+'</div></div>'+
- '<div class="signal-card"><div class="signal-label">Technicals</div><div class="signal-value">'+esc(d.technicals||"—")+'</div></div>'+
- '<div class="signal-card"><div class="signal-label">12M Momentum</div><div class="signal-value">'+(d.momentum?Number(d.momentum).toFixed(2)+'%':'—')+'</div></div>'+
- '<div class="signal-card"><div class="signal-label">Return on Equity</div><div class="signal-value">'+(d.roe?Number(d.roe).toFixed(2)+'%':'—')+'</div></div>'+
- '<div class="signal-card"><div class="signal-label">Asset Growth</div><div class="signal-value">'+(d.assetGrowth?Number(d.assetGrowth).toFixed(2)+'%':'—')+'</div></div>'+
+ 
+ 
+ 
+ 
  '</div></div>'+
  '<div class="research-section"><h3>Analyst 12-Month Targets</h3><div class="forecast-range">'+
  '<div class="forecast-item">Low<strong>'+(d.analystLow?'$'+Number(d.analystLow).toFixed(2):'—')+'</strong></div>'+
@@ -904,14 +865,8 @@ function formValues(){return{
  investorTrend:q("#sInvestorPrimary").value,
  hedgeFund:q("#sHedgePrimary").value,
  price:Number(q("#sPrice").value)||0,
- target:Number(q("#sTarget").value)||0,
- forecast:q("#sForecast").value,
  insider:q("#sInsider").value,
  newsTrend:q("#sNewsTrend").value,
- technicals:q("#sTechnicals").value,
- momentum:Number(q("#sMomentum").value)||0,
- roe:Number(q("#sROE").value)||0,
- assetGrowth:Number(q("#sAssetGrowth").value)||0,
  analystHigh:Number(q("#sAnalystHigh").value)||0,
  analystAvg:Number(q("#sAnalystAvg").value)||0,
  analystLow:Number(q("#sAnalystLow").value)||0,
@@ -927,9 +882,9 @@ function beginEdit(id){
  q("#stockSubmitBtn").textContent="Save Changes";
  q("#sTicker").value=d.ticker;q("#sCompany").value=d.company;q("#sSector").value=d.sector;q("#sStatus").value=d.status;
  q("#sSmartScorePrimary").value=d.smartScore||5;q("#sInvestorPrimary").value=d.investorTrend||"Negative";q("#sHedgePrimary").value=d.hedgeFund||"Negative";
- q("#sPrice").value=d.price||"";q("#sTarget").value=d.target||"";q("#sForecast").value=d.forecast||"Neutral";q("#sInsider").value=d.insider||"Neutral";
- q("#sNewsTrend").value=d.newsTrend||"Neutral";q("#sTechnicals").value=d.technicals||"Neutral";q("#sMomentum").value=d.momentum||"";q("#sROE").value=d.roe||"";
- q("#sAssetGrowth").value=d.assetGrowth||"";q("#sAnalystHigh").value=d.analystHigh||"";q("#sAnalystAvg").value=d.analystAvg||"";q("#sAnalystLow").value=d.analystLow||"";
+ q("#sPrice").value=d.price||"";q("#sInsider").value=d.insider||"Neutral";
+ q("#sNewsTrend").value=d.newsTrend||"Neutral";
+ q("#sAnalystHigh").value=d.analystHigh||"";q("#sAnalystAvg").value=d.analystAvg||"";q("#sAnalystLow").value=d.analystLow||"";
  q("#sThesis").value=d.thesis;q("#sCatalyst").value=d.catalyst||"";
  q("#stockMessage").textContent="Editing "+d.ticker+". Save changes to replace this entry.";
  q("#stockForm").scrollIntoView({behavior:"smooth",block:"start"});
@@ -965,16 +920,16 @@ syncFilterOptions();render();renderDetail(data[0]);+Number(d.price).toFixed(2):'
  '<div class="metric"><div class="metric-label">Current Value</div><div class="metric-value">'+(d.currentValue?'
  '</div>'+
  '<div class="research-section"><h3>Research Signals</h3><div class="signal-grid">'+
- '<div class="signal-card"><div class="signal-label">12M Forecast</div><div class="signal-value">'+esc(d.forecast||"—")+'</div></div>'+
+ 
  '<div class="signal-card"><div class="signal-label">Smart Score</div><div class="signal-value">'+d.smartScore+'/10</div><div class="score-meter"><span class="score-marker" style="left:'+Math.max(0,Math.min(100,((d.smartScore||1)-1)/9*100))+'%"></span></div></div>'+
  '<div class="signal-card"><div class="signal-label">Hedge Fund Trend</div><div class="signal-value">'+esc(d.hedgeFund||"—")+'</div></div>'+
  '<div class="signal-card"><div class="signal-label">Insider Trend</div><div class="signal-value">'+esc(d.insider||"—")+'</div></div>'+
  '<div class="signal-card"><div class="signal-label">Investor Trend</div><div class="signal-value">'+esc(d.investorTrend||"—")+'</div></div>'+
  '<div class="signal-card"><div class="signal-label">News Trend</div><div class="signal-value">'+esc(d.newsTrend||"—")+'</div></div>'+
- '<div class="signal-card"><div class="signal-label">Technicals</div><div class="signal-value">'+esc(d.technicals||"—")+'</div></div>'+
- '<div class="signal-card"><div class="signal-label">12M Momentum</div><div class="signal-value">'+(d.momentum?Number(d.momentum).toFixed(2)+'%':'—')+'</div></div>'+
- '<div class="signal-card"><div class="signal-label">Return on Equity</div><div class="signal-value">'+(d.roe?Number(d.roe).toFixed(2)+'%':'—')+'</div></div>'+
- '<div class="signal-card"><div class="signal-label">Asset Growth</div><div class="signal-value">'+(d.assetGrowth?Number(d.assetGrowth).toFixed(2)+'%':'—')+'</div></div>'+
+ 
+ 
+ 
+ 
  '</div></div>'+
  '<div class="research-section"><h3>Analyst 12-Month Targets</h3><div class="forecast-range">'+
  '<div class="forecast-item">Low<strong>'+(d.analystLow?'$'+Number(d.analystLow).toFixed(2):'—')+'</strong></div>'+
@@ -999,14 +954,8 @@ function formValues(){return{
  investorTrend:q("#sInvestorPrimary").value,
  hedgeFund:q("#sHedgePrimary").value,
  price:Number(q("#sPrice").value)||0,
- target:Number(q("#sTarget").value)||0,
- forecast:q("#sForecast").value,
  insider:q("#sInsider").value,
  newsTrend:q("#sNewsTrend").value,
- technicals:q("#sTechnicals").value,
- momentum:Number(q("#sMomentum").value)||0,
- roe:Number(q("#sROE").value)||0,
- assetGrowth:Number(q("#sAssetGrowth").value)||0,
  analystHigh:Number(q("#sAnalystHigh").value)||0,
  analystAvg:Number(q("#sAnalystAvg").value)||0,
  analystLow:Number(q("#sAnalystLow").value)||0,
@@ -1022,9 +971,9 @@ function beginEdit(id){
  q("#stockSubmitBtn").textContent="Save Changes";
  q("#sTicker").value=d.ticker;q("#sCompany").value=d.company;q("#sSector").value=d.sector;q("#sStatus").value=d.status;
  q("#sSmartScorePrimary").value=d.smartScore||5;q("#sInvestorPrimary").value=d.investorTrend||"Negative";q("#sHedgePrimary").value=d.hedgeFund||"Negative";
- q("#sPrice").value=d.price||"";q("#sTarget").value=d.target||"";q("#sForecast").value=d.forecast||"Neutral";q("#sInsider").value=d.insider||"Neutral";
- q("#sNewsTrend").value=d.newsTrend||"Neutral";q("#sTechnicals").value=d.technicals||"Neutral";q("#sMomentum").value=d.momentum||"";q("#sROE").value=d.roe||"";
- q("#sAssetGrowth").value=d.assetGrowth||"";q("#sAnalystHigh").value=d.analystHigh||"";q("#sAnalystAvg").value=d.analystAvg||"";q("#sAnalystLow").value=d.analystLow||"";
+ q("#sPrice").value=d.price||"";q("#sInsider").value=d.insider||"Neutral";
+ q("#sNewsTrend").value=d.newsTrend||"Neutral";
+ q("#sAnalystHigh").value=d.analystHigh||"";q("#sAnalystAvg").value=d.analystAvg||"";q("#sAnalystLow").value=d.analystLow||"";
  q("#sThesis").value=d.thesis;q("#sCatalyst").value=d.catalyst||"";
  q("#stockMessage").textContent="Editing "+d.ticker+". Save changes to replace this entry.";
  q("#stockForm").scrollIntoView({behavior:"smooth",block:"start"});
@@ -1087,16 +1036,16 @@ function renderDetail(d){
  '<div class="metric"><div class="metric-label">Target</div><div class="metric-value">'+(d.target?'$'+Number(d.target).toFixed(2):'—')+'</div></div>'+
  '</div>'+
  '<div class="research-section"><h3>Research Signals</h3><div class="signal-grid">'+
- '<div class="signal-card"><div class="signal-label">12M Forecast</div><div class="signal-value">'+esc(d.forecast||"—")+'</div></div>'+
+ 
  '<div class="signal-card"><div class="signal-label">Smart Score</div><div class="signal-value">'+d.smartScore+'/10</div><div class="score-meter"><span class="score-marker" style="left:'+Math.max(0,Math.min(100,((d.smartScore||1)-1)/9*100))+'%"></span></div></div>'+
  '<div class="signal-card"><div class="signal-label">Hedge Fund Trend</div><div class="signal-value">'+esc(d.hedgeFund||"—")+'</div></div>'+
  '<div class="signal-card"><div class="signal-label">Insider Trend</div><div class="signal-value">'+esc(d.insider||"—")+'</div></div>'+
  '<div class="signal-card"><div class="signal-label">Investor Trend</div><div class="signal-value">'+esc(d.investorTrend||"—")+'</div></div>'+
  '<div class="signal-card"><div class="signal-label">News Trend</div><div class="signal-value">'+esc(d.newsTrend||"—")+'</div></div>'+
- '<div class="signal-card"><div class="signal-label">Technicals</div><div class="signal-value">'+esc(d.technicals||"—")+'</div></div>'+
- '<div class="signal-card"><div class="signal-label">12M Momentum</div><div class="signal-value">'+(d.momentum?Number(d.momentum).toFixed(2)+'%':'—')+'</div></div>'+
- '<div class="signal-card"><div class="signal-label">Return on Equity</div><div class="signal-value">'+(d.roe?Number(d.roe).toFixed(2)+'%':'—')+'</div></div>'+
- '<div class="signal-card"><div class="signal-label">Asset Growth</div><div class="signal-value">'+(d.assetGrowth?Number(d.assetGrowth).toFixed(2)+'%':'—')+'</div></div>'+
+ 
+ 
+ 
+ 
  '</div></div>'+
  '<div class="research-section"><h3>Analyst 12-Month Targets</h3><div class="forecast-range">'+
  '<div class="forecast-item">Low<strong>'+(d.analystLow?'$'+Number(d.analystLow).toFixed(2):'—')+'</strong></div>'+
@@ -1121,14 +1070,8 @@ function formValues(){return{
  investorTrend:q("#sInvestorPrimary").value,
  hedgeFund:q("#sHedgePrimary").value,
  price:Number(q("#sPrice").value)||0,
- target:Number(q("#sTarget").value)||0,
- forecast:q("#sForecast").value,
  insider:q("#sInsider").value,
  newsTrend:q("#sNewsTrend").value,
- technicals:q("#sTechnicals").value,
- momentum:Number(q("#sMomentum").value)||0,
- roe:Number(q("#sROE").value)||0,
- assetGrowth:Number(q("#sAssetGrowth").value)||0,
  analystHigh:Number(q("#sAnalystHigh").value)||0,
  analystAvg:Number(q("#sAnalystAvg").value)||0,
  analystLow:Number(q("#sAnalystLow").value)||0,
@@ -1144,9 +1087,9 @@ function beginEdit(id){
  q("#stockSubmitBtn").textContent="Save Changes";
  q("#sTicker").value=d.ticker;q("#sCompany").value=d.company;q("#sSector").value=d.sector;q("#sStatus").value=d.status;
  q("#sSmartScorePrimary").value=d.smartScore||5;q("#sInvestorPrimary").value=d.investorTrend||"Negative";q("#sHedgePrimary").value=d.hedgeFund||"Negative";
- q("#sPrice").value=d.price||"";q("#sTarget").value=d.target||"";q("#sForecast").value=d.forecast||"Neutral";q("#sInsider").value=d.insider||"Neutral";
- q("#sNewsTrend").value=d.newsTrend||"Neutral";q("#sTechnicals").value=d.technicals||"Neutral";q("#sMomentum").value=d.momentum||"";q("#sROE").value=d.roe||"";
- q("#sAssetGrowth").value=d.assetGrowth||"";q("#sAnalystHigh").value=d.analystHigh||"";q("#sAnalystAvg").value=d.analystAvg||"";q("#sAnalystLow").value=d.analystLow||"";
+ q("#sPrice").value=d.price||"";q("#sInsider").value=d.insider||"Neutral";
+ q("#sNewsTrend").value=d.newsTrend||"Neutral";
+ q("#sAnalystHigh").value=d.analystHigh||"";q("#sAnalystAvg").value=d.analystAvg||"";q("#sAnalystLow").value=d.analystLow||"";
  q("#sThesis").value=d.thesis;q("#sCatalyst").value=d.catalyst||"";
  q("#stockMessage").textContent="Editing "+d.ticker+". Save changes to replace this entry.";
  q("#stockForm").scrollIntoView({behavior:"smooth",block:"start"});
@@ -1180,16 +1123,16 @@ q("#stockForm").addEventListener("submit",e=>{
 syncFilterOptions();render();renderDetail(data[0]);+Number(d.currentValue).toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2}):'—')+'</div></div>'+
  '</div>'+
  '<div class="research-section"><h3>Research Signals</h3><div class="signal-grid">'+
- '<div class="signal-card"><div class="signal-label">12M Forecast</div><div class="signal-value">'+esc(d.forecast||"—")+'</div></div>'+
+ 
  '<div class="signal-card"><div class="signal-label">Smart Score</div><div class="signal-value">'+d.smartScore+'/10</div><div class="score-meter"><span class="score-marker" style="left:'+Math.max(0,Math.min(100,((d.smartScore||1)-1)/9*100))+'%"></span></div></div>'+
  '<div class="signal-card"><div class="signal-label">Hedge Fund Trend</div><div class="signal-value">'+esc(d.hedgeFund||"—")+'</div></div>'+
  '<div class="signal-card"><div class="signal-label">Insider Trend</div><div class="signal-value">'+esc(d.insider||"—")+'</div></div>'+
  '<div class="signal-card"><div class="signal-label">Investor Trend</div><div class="signal-value">'+esc(d.investorTrend||"—")+'</div></div>'+
  '<div class="signal-card"><div class="signal-label">News Trend</div><div class="signal-value">'+esc(d.newsTrend||"—")+'</div></div>'+
- '<div class="signal-card"><div class="signal-label">Technicals</div><div class="signal-value">'+esc(d.technicals||"—")+'</div></div>'+
- '<div class="signal-card"><div class="signal-label">12M Momentum</div><div class="signal-value">'+(d.momentum?Number(d.momentum).toFixed(2)+'%':'—')+'</div></div>'+
- '<div class="signal-card"><div class="signal-label">Return on Equity</div><div class="signal-value">'+(d.roe?Number(d.roe).toFixed(2)+'%':'—')+'</div></div>'+
- '<div class="signal-card"><div class="signal-label">Asset Growth</div><div class="signal-value">'+(d.assetGrowth?Number(d.assetGrowth).toFixed(2)+'%':'—')+'</div></div>'+
+ 
+ 
+ 
+ 
  '</div></div>'+
  '<div class="research-section"><h3>Analyst 12-Month Targets</h3><div class="forecast-range">'+
  '<div class="forecast-item">Low<strong>'+(d.analystLow?'$'+Number(d.analystLow).toFixed(2):'—')+'</strong></div>'+
@@ -1214,14 +1157,8 @@ function formValues(){return{
  investorTrend:q("#sInvestorPrimary").value,
  hedgeFund:q("#sHedgePrimary").value,
  price:Number(q("#sPrice").value)||0,
- target:Number(q("#sTarget").value)||0,
- forecast:q("#sForecast").value,
  insider:q("#sInsider").value,
  newsTrend:q("#sNewsTrend").value,
- technicals:q("#sTechnicals").value,
- momentum:Number(q("#sMomentum").value)||0,
- roe:Number(q("#sROE").value)||0,
- assetGrowth:Number(q("#sAssetGrowth").value)||0,
  analystHigh:Number(q("#sAnalystHigh").value)||0,
  analystAvg:Number(q("#sAnalystAvg").value)||0,
  analystLow:Number(q("#sAnalystLow").value)||0,
@@ -1237,9 +1174,9 @@ function beginEdit(id){
  q("#stockSubmitBtn").textContent="Save Changes";
  q("#sTicker").value=d.ticker;q("#sCompany").value=d.company;q("#sSector").value=d.sector;q("#sStatus").value=d.status;
  q("#sSmartScorePrimary").value=d.smartScore||5;q("#sInvestorPrimary").value=d.investorTrend||"Negative";q("#sHedgePrimary").value=d.hedgeFund||"Negative";
- q("#sPrice").value=d.price||"";q("#sTarget").value=d.target||"";q("#sForecast").value=d.forecast||"Neutral";q("#sInsider").value=d.insider||"Neutral";
- q("#sNewsTrend").value=d.newsTrend||"Neutral";q("#sTechnicals").value=d.technicals||"Neutral";q("#sMomentum").value=d.momentum||"";q("#sROE").value=d.roe||"";
- q("#sAssetGrowth").value=d.assetGrowth||"";q("#sAnalystHigh").value=d.analystHigh||"";q("#sAnalystAvg").value=d.analystAvg||"";q("#sAnalystLow").value=d.analystLow||"";
+ q("#sPrice").value=d.price||"";q("#sInsider").value=d.insider||"Neutral";
+ q("#sNewsTrend").value=d.newsTrend||"Neutral";
+ q("#sAnalystHigh").value=d.analystHigh||"";q("#sAnalystAvg").value=d.analystAvg||"";q("#sAnalystLow").value=d.analystLow||"";
  q("#sThesis").value=d.thesis;q("#sCatalyst").value=d.catalyst||"";
  q("#stockMessage").textContent="Editing "+d.ticker+". Save changes to replace this entry.";
  q("#stockForm").scrollIntoView({behavior:"smooth",block:"start"});
@@ -1302,16 +1239,16 @@ function renderDetail(d){
  '<div class="metric"><div class="metric-label">Target</div><div class="metric-value">'+(d.target?'$'+Number(d.target).toFixed(2):'—')+'</div></div>'+
  '</div>'+
  '<div class="research-section"><h3>Research Signals</h3><div class="signal-grid">'+
- '<div class="signal-card"><div class="signal-label">12M Forecast</div><div class="signal-value">'+esc(d.forecast||"—")+'</div></div>'+
+ 
  '<div class="signal-card"><div class="signal-label">Smart Score</div><div class="signal-value">'+d.smartScore+'/10</div><div class="score-meter"><span class="score-marker" style="left:'+Math.max(0,Math.min(100,((d.smartScore||1)-1)/9*100))+'%"></span></div></div>'+
  '<div class="signal-card"><div class="signal-label">Hedge Fund Trend</div><div class="signal-value">'+esc(d.hedgeFund||"—")+'</div></div>'+
  '<div class="signal-card"><div class="signal-label">Insider Trend</div><div class="signal-value">'+esc(d.insider||"—")+'</div></div>'+
  '<div class="signal-card"><div class="signal-label">Investor Trend</div><div class="signal-value">'+esc(d.investorTrend||"—")+'</div></div>'+
  '<div class="signal-card"><div class="signal-label">News Trend</div><div class="signal-value">'+esc(d.newsTrend||"—")+'</div></div>'+
- '<div class="signal-card"><div class="signal-label">Technicals</div><div class="signal-value">'+esc(d.technicals||"—")+'</div></div>'+
- '<div class="signal-card"><div class="signal-label">12M Momentum</div><div class="signal-value">'+(d.momentum?Number(d.momentum).toFixed(2)+'%':'—')+'</div></div>'+
- '<div class="signal-card"><div class="signal-label">Return on Equity</div><div class="signal-value">'+(d.roe?Number(d.roe).toFixed(2)+'%':'—')+'</div></div>'+
- '<div class="signal-card"><div class="signal-label">Asset Growth</div><div class="signal-value">'+(d.assetGrowth?Number(d.assetGrowth).toFixed(2)+'%':'—')+'</div></div>'+
+ 
+ 
+ 
+ 
  '</div></div>'+
  '<div class="research-section"><h3>Analyst 12-Month Targets</h3><div class="forecast-range">'+
  '<div class="forecast-item">Low<strong>'+(d.analystLow?'$'+Number(d.analystLow).toFixed(2):'—')+'</strong></div>'+
@@ -1336,14 +1273,8 @@ function formValues(){return{
  investorTrend:q("#sInvestorPrimary").value,
  hedgeFund:q("#sHedgePrimary").value,
  price:Number(q("#sPrice").value)||0,
- target:Number(q("#sTarget").value)||0,
- forecast:q("#sForecast").value,
  insider:q("#sInsider").value,
  newsTrend:q("#sNewsTrend").value,
- technicals:q("#sTechnicals").value,
- momentum:Number(q("#sMomentum").value)||0,
- roe:Number(q("#sROE").value)||0,
- assetGrowth:Number(q("#sAssetGrowth").value)||0,
  analystHigh:Number(q("#sAnalystHigh").value)||0,
  analystAvg:Number(q("#sAnalystAvg").value)||0,
  analystLow:Number(q("#sAnalystLow").value)||0,
@@ -1359,9 +1290,9 @@ function beginEdit(id){
  q("#stockSubmitBtn").textContent="Save Changes";
  q("#sTicker").value=d.ticker;q("#sCompany").value=d.company;q("#sSector").value=d.sector;q("#sStatus").value=d.status;
  q("#sSmartScorePrimary").value=d.smartScore||5;q("#sInvestorPrimary").value=d.investorTrend||"Negative";q("#sHedgePrimary").value=d.hedgeFund||"Negative";
- q("#sPrice").value=d.price||"";q("#sTarget").value=d.target||"";q("#sForecast").value=d.forecast||"Neutral";q("#sInsider").value=d.insider||"Neutral";
- q("#sNewsTrend").value=d.newsTrend||"Neutral";q("#sTechnicals").value=d.technicals||"Neutral";q("#sMomentum").value=d.momentum||"";q("#sROE").value=d.roe||"";
- q("#sAssetGrowth").value=d.assetGrowth||"";q("#sAnalystHigh").value=d.analystHigh||"";q("#sAnalystAvg").value=d.analystAvg||"";q("#sAnalystLow").value=d.analystLow||"";
+ q("#sPrice").value=d.price||"";q("#sInsider").value=d.insider||"Neutral";
+ q("#sNewsTrend").value=d.newsTrend||"Neutral";
+ q("#sAnalystHigh").value=d.analystHigh||"";q("#sAnalystAvg").value=d.analystAvg||"";q("#sAnalystLow").value=d.analystLow||"";
  q("#sThesis").value=d.thesis;q("#sCatalyst").value=d.catalyst||"";
  q("#stockMessage").textContent="Editing "+d.ticker+". Save changes to replace this entry.";
  q("#stockForm").scrollIntoView({behavior:"smooth",block:"start"});
