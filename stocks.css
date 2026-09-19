@@ -17,3 +17,5 @@ body:before{content:"";position:fixed;inset:0;pointer-events:none;background-ima
 
 .chart-wrap{padding:14px 14px 20px}
 .chart-wrap svg{overflow:visible}
+
+.forecast-value{font-size:11px;font-weight:800}.high-label{fill:#0F766E}.avg-label{fill:#1F2937}.low-label{fill:#B91C1C}
