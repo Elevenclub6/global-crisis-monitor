@@ -29,7 +29,7 @@
 
 <section class="panel entry-panel">
   <div class="panel-head">
-    <div><span class="panel-kicker">MANUAL INPUT</span><h2>Add Stock Idea</h2></div>
+    <div><span class="panel-kicker">MANUAL INPUT</span><h2 id="stockFormTitle">Add Stock Idea</h2></div>
     <div class="small-note">Entries last for this browser session</div>
   </div>
   <form id="stockForm" class="entry-form">
@@ -46,7 +46,7 @@
     <label class="span-2">Thesis<textarea id="sThesis" rows="3" required placeholder="Why are you interested in this stock?"></textarea></label>
     <label class="span-2">Catalyst / Notes<input id="sCatalyst" placeholder="Upcoming earnings, product launch, valuation reset..."></label>
     <div class="span-2 form-actions">
-      <button class="primary-action" type="submit">Add to Universe</button>
+      <button class="primary-action" id="stockSubmitBtn" type="submit">Add to Universe</button><button id="cancelEditBtn" type="button" class="hidden-action">Cancel Edit</button>
       <button type="reset">Clear</button>
       <span id="stockMessage" aria-live="polite"></span>
     </div>
@@ -73,7 +73,7 @@
 <section class="bottom-grid">
   <section class="panel">
     <div class="panel-head"><div><span class="panel-kicker">WATCHLIST</span><h2>Stock Feed</h2></div><div id="stockCount" class="small-note"></div></div>
-    <div class="table-wrap"><table><thead><tr><th>Ticker</th><th>Company</th><th>Sector</th><th>Risk</th><th>Upside</th><th>Conviction</th><th>Status</th></tr></thead><tbody id="stockTable"></tbody></table></div>
+    <div class="table-wrap"><table><thead><tr><th>Ticker</th><th>Company</th><th>Sector</th><th>Risk</th><th>Upside</th><th>Conviction</th><th>Status</th><th>Actions</th></tr></thead><tbody id="stockTable"></tbody></table></div>
   </section>
   <section class="panel">
     <div class="panel-head"><div><span class="panel-kicker">SECTOR MIX</span><h2>Sector Breakdown</h2></div></div>
@@ -81,7 +81,7 @@
   </section>
 </section>
 
-<footer><span>Stock Universe Monitor v1.0</span><span>For research organization, not financial advice.</span></footer>
+<footer><span>Stock Universe Monitor v1.1</span><span>For research organization, not financial advice.</span></footer>
 </div>
 <script src="stocks-data.js"></script>
 <script src="stocks.js"></script>
