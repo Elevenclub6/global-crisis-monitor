@@ -43,7 +43,7 @@
     <label>Hedge Fund Trend<select id="sHedgePrimary"><option>Positive</option><option selected>Negative</option></select></label>
     <label>Price<input id="sPrice" type="number" min="0" step="0.01" placeholder="100.00"></label>    <label>Insider Trend<select id="sInsider"><option>Bought Shares</option><option selected>Neutral</option><option>Sold Shares</option></select></label>
     <label>News Trend<select id="sNewsTrend"><option>Positive</option><option selected>Neutral</option><option>Negative</option></select></label>    <label>Shares Owned<input id="sShares" type="number" min="0" step="0.0001" placeholder="10"></label>
-    <label>Current Value $<input id="sCurrentValue" type="number" min="0" step="0.01" placeholder="5322.30"></label>
+    <label>Current Value $<input id="sCurrentValue" type="number" min="0" step="0.01" placeholder="Auto-calculated" readonly></label>
 
     <label>Analyst High Target<input id="sAnalystHigh" type="number" min="0" step="0.01" placeholder="894.00"></label>
     <label>Analyst Avg Target<input id="sAnalystAvg" type="number" min="0" step="0.01" placeholder="775.45"></label>
@@ -88,7 +88,7 @@
   </section>
 </section>
 
-<footer><span>Stock Universe Monitor v1.6</span><span>For research organization, not financial advice.</span></footer>
+<footer><span>Stock Universe Monitor v1.7</span><span>For research organization, not financial advice.</span></footer>
 </div>
 <script src="stocks-data.js"></script>
 <script src="stocks.js"></script>
