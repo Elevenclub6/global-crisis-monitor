@@ -78,6 +78,7 @@ function renderTable(rows){
  q("#stockCount").textContent=rows.length+" stocks";
 }
 function renderBars(rows){const c={};rows.forEach(d=>c[d.sector]=(c[d.sector]||0)+1);const max=Math.max(1,...Object.values(c));q("#sectorBars").innerHTML=Object.entries(c).sort((a,b)=>b[1]-a[1]).map(([k,v])=>'<div class="bar-row"><div class="bar-label">'+esc(k)+'</div><div class="bar-track"><div class="bar-fill" style="width:'+(v/max*100)+'%;background:'+(sectorColors[k]||"#3B82F6")+'"></div></div><div class="bar-value">'+v+'</div></div>').join("")}
+function signalClass(v){const s=String(v||"").toLowerCase();if(s.includes("positive")||s.includes("bought")||s.includes("increased"))return "positive";if(s.includes("negative")||s.includes("sold")||s.includes("decreased"))return "negative";return "neutral"}
 function renderDetail(d){
  if(!d){q("#stockDetailTitle").textContent="Choose a stock";q("#stockDetailContent").innerHTML='<div class="detail-empty">Click a bubble or stock row to inspect your thesis.</div>';return}
  const low=roi(Number(d.price)||0,Number(d.analystLow)||0),avg=roi(Number(d.price)||0,Number(d.analystAvg)||0),high=roi(Number(d.price)||0,Number(d.analystHigh)||0);
