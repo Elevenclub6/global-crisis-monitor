@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Stock Universe Monitor</title>
+<link rel="stylesheet" href="stocks.css">
+</head>
+<body>
+<div class="shell">
+<header class="topbar">
+  <div>
+    <div class="eyebrow">PERSONAL MARKET INTELLIGENCE</div>
+    <h1>Stock Universe Monitor</h1>
+    <p>Interactive risk vs. reward visualization for stocks you want to track, study, or revisit.</p>
+  </div>
+  <a class="switch-link" href="index.html">Global Crisis Monitor</a>
+</header>
+
+<section class="kpis" id="stockKpis"></section>
+
+<section class="toolbar">
+  <input id="stockSearch" type="search" placeholder="Search ticker, company, sector...">
+  <select id="sectorFilter"><option value="">All sectors</option></select>
+  <select id="statusFilter"><option value="">All statuses</option></select>
+  <select id="horizonFilter"><option value="">All horizons</option></select>
+  <button id="stockReset" type="button">Reset</button>
+</section>
+
+<section class="panel entry-panel">
+  <div class="panel-head">
+    <div><span class="panel-kicker">MANUAL INPUT</span><h2>Add Stock Idea</h2></div>
+    <div class="small-note">Entries last for this browser session</div>
+  </div>
+  <form id="stockForm" class="entry-form">
+    <label>Ticker<input id="sTicker" required placeholder="NVDA"></label>
+    <label>Company<input id="sCompany" required placeholder="NVIDIA"></label>
+    <label>Sector<input id="sSector" required placeholder="Technology"></label>
+    <label>Status<select id="sStatus"><option>Watch</option><option>Researching</option><option>Owned</option><option>Passed</option></select></label>
+    <label>Risk (1-10)<input id="sRisk" type="number" min="1" max="10" value="5" required></label>
+    <label>Expected upside %<input id="sUpside" type="number" min="-100" max="500" step="1" value="20" required></label>
+    <label>Conviction (1-10)<input id="sConviction" type="number" min="1" max="10" value="5" required></label>
+    <label>Horizon<select id="sHorizon"><option>Short-term</option><option selected>Medium-term</option><option>Long-term</option></select></label>
+    <label>Price<input id="sPrice" type="number" min="0" step="0.01" placeholder="100.00"></label>
+    <label>Target<input id="sTarget" type="number" min="0" step="0.01" placeholder="125.00"></label>
+    <label class="span-2">Thesis<textarea id="sThesis" rows="3" required placeholder="Why are you interested in this stock?"></textarea></label>
+    <label class="span-2">Catalyst / Notes<input id="sCatalyst" placeholder="Upcoming earnings, product launch, valuation reset..."></label>
+    <div class="span-2 form-actions">
+      <button class="primary-action" type="submit">Add to Universe</button>
+      <button type="reset">Clear</button>
+      <span id="stockMessage" aria-live="polite"></span>
+    </div>
+  </form>
+</section>
+
+<main class="main-grid">
+  <section class="panel visual-panel">
+    <div class="panel-head">
+      <div><span class="panel-kicker">RISK / REWARD FIELD</span><h2>Stock Opportunity Map</h2></div>
+      <div class="legend"><span><i class="dot watch"></i>Watch</span><span><i class="dot owned"></i>Owned</span><span><i class="dot research"></i>Researching</span><span><i class="dot passed"></i>Passed</span></div>
+    </div>
+    <div class="chart-wrap">
+      <svg id="stockChart" viewBox="0 0 900 620" role="img" aria-label="Risk versus reward bubble chart"></svg>
+    </div>
+  </section>
+
+  <aside class="panel detail-panel">
+    <div class="panel-head"><div><span class="panel-kicker">SELECTED IDEA</span><h2 id="stockDetailTitle">Choose a stock</h2></div></div>
+    <div id="stockDetailContent" class="detail-empty">Click a bubble or stock row to inspect your thesis.</div>
+  </aside>
+</main>
+
+<section class="bottom-grid">
+  <section class="panel">
+    <div class="panel-head"><div><span class="panel-kicker">WATCHLIST</span><h2>Stock Feed</h2></div><div id="stockCount" class="small-note"></div></div>
+    <div class="table-wrap"><table><thead><tr><th>Ticker</th><th>Company</th><th>Sector</th><th>Risk</th><th>Upside</th><th>Conviction</th><th>Status</th></tr></thead><tbody id="stockTable"></tbody></table></div>
+  </section>
+  <section class="panel">
+    <div class="panel-head"><div><span class="panel-kicker">SECTOR MIX</span><h2>Sector Breakdown</h2></div></div>
+    <div id="sectorBars" class="bars"></div>
+  </section>
+</section>
+
+<footer><span>Stock Universe Monitor v1.0</span><span>For research organization, not financial advice.</span></footer>
+</div>
+<script src="stocks-data.js"></script>
+<script src="stocks.js"></script>
+</body>
+</html>
