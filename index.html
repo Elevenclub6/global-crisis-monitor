@@ -12,9 +12,36 @@
 <header class="topbar"><div><div class="eyebrow">GEOSPATIAL INTELLIGENCE DASHBOARD</div><h1>Global Crisis Monitor</h1><p class="subtitle">Interactive world crisis visualization with severity, category, status, and trend filtering.</p></div><div class="status-chip"><span class="pulse"></span> LIVE ANALYSIS VIEW</div></header>
 <section class="kpis" id="kpis"></section>
 <section class="toolbar"><input id="search" type="search" placeholder="Search crisis, country, region..." aria-label="Search crises"><select id="categoryFilter"><option value="">All categories</option></select><select id="severityFilter"><option value="">All severities</option></select><select id="statusFilter"><option value="">All statuses</option></select><button id="resetBtn" type="button">Reset</button></section>
+
+<section class="panel entry-panel">
+  <div class="panel-head">
+    <div><span class="panel-kicker">MANUAL INPUT</span><h2>Add Crisis Record</h2></div>
+    <div class="feed-count">Adds to this browser session</div>
+  </div>
+  <form id="crisisForm" class="entry-form">
+    <label>Crisis name<input id="fName" required placeholder="e.g. Port disruption"></label>
+    <label>Country / area<input id="fCountry" required placeholder="e.g. Panama"></label>
+    <label>Region<input id="fRegion" required placeholder="e.g. Central America"></label>
+    <label>Category<select id="fCategory" required><option>Conflict</option><option>Political & Security</option><option>Geopolitical</option><option>Security</option><option>Humanitarian</option><option>Natural Disaster</option><option>Infrastructure & Trade</option><option>Energy</option></select></label>
+    <label>Severity<select id="fSeverity" required><option value="1">1 - Low</option><option value="2">2 - Guarded</option><option value="3" selected>3 - Significant</option><option value="4">4 - High</option><option value="5">5 - Critical</option></select></label>
+    <label>Status<select id="fStatus" required><option>Active</option><option>Watch</option><option>Resolved</option></select></label>
+    <label>Trend<select id="fTrend" required><option>Stable</option><option>Worsening</option><option>Improving</option></select></label>
+    <label>Start date<input id="fStart" type="date" required></label>
+    <label>Latitude<input id="fLat" type="number" step="any" min="-90" max="90" required placeholder="41.7"></label>
+    <label>Longitude<input id="fLng" type="number" step="any" min="-180" max="180" required placeholder="-72.7"></label>
+    <label class="span-2">Description<textarea id="fDescription" rows="3" required placeholder="What happened, why it matters, and what is changing?"></textarea></label>
+    <label class="span-2">Source / note<input id="fSource" placeholder="Source URL, report name, or analyst note"></label>
+    <div class="span-2 form-actions">
+      <button type="submit" class="primary-action">Add to Monitor</button>
+      <button type="reset">Clear Form</button>
+      <span id="formMessage" aria-live="polite"></span>
+    </div>
+  </form>
+</section>
+
 <main class="main-grid"><section class="panel map-panel"><div class="panel-head"><div><span class="panel-kicker">GLOBAL VIEW</span><h2>Interactive Crisis Map</h2></div><div class="legend" id="legend"></div></div><div id="map"></div></section><aside class="panel detail-panel"><div class="panel-head"><div><span class="panel-kicker">SELECTED EVENT</span><h2 id="detailTitle">Choose a crisis</h2></div></div><div id="detailContent" class="detail-empty">Click a marker or crisis record to inspect its profile.</div></aside></main>
 <section class="bottom-grid"><section class="panel"><div class="panel-head"><div><span class="panel-kicker">ACTIVE INTELLIGENCE</span><h2>Crisis Feed</h2></div><div class="feed-count" id="feedCount"></div></div><div class="table-wrap"><table><thead><tr><th>Crisis</th><th>Region</th><th>Category</th><th>Severity</th><th>Trend</th><th>Status</th></tr></thead><tbody id="crisisTable"></tbody></table></div></section><section class="panel chart-panel"><div class="panel-head"><div><span class="panel-kicker">DISTRIBUTION</span><h2>Category Breakdown</h2></div></div><div id="categoryBars" class="bars"></div></section></section>
-<footer><span>Global Crisis Monitor v1.0</span><span>Sample records for demonstration.</span></footer>
+<footer><span>Global Crisis Monitor v1.1</span><span>Sample records plus manual session entries.</span></footer>
 </div>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="data.js"></script>
