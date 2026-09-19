@@ -14,3 +14,6 @@
 body:before{content:"";position:fixed;inset:0;pointer-events:none;background-image:linear-gradient(rgba(120,113,108,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(120,113,108,.04) 1px,transparent 1px);background-size:28px 28px;opacity:.55}
 .panel,.kpi,.switch-link,.toolbar input,.toolbar select,.toolbar button,.entry-form input,.entry-form select,.entry-form textarea,.entry-form button{box-shadow:0 8px 24px rgba(60,52,43,.06)}
 .entry-form input[readonly]{background:#EEE9E0;color:#5F574E;cursor:not-allowed}
+
+.chart-wrap{padding:14px 14px 20px}
+.chart-wrap svg{overflow:visible}
