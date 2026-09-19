@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Global Crisis Monitor</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="app-shell">
+<header class="topbar"><div><div class="eyebrow">GEOSPATIAL INTELLIGENCE DASHBOARD</div><h1>Global Crisis Monitor</h1><p class="subtitle">Interactive world crisis visualization with severity, category, status, and trend filtering.</p></div><div class="status-chip"><span class="pulse"></span> LIVE ANALYSIS VIEW</div></header>
+<section class="kpis" id="kpis"></section>
+<section class="toolbar"><input id="search" type="search" placeholder="Search crisis, country, region..." aria-label="Search crises"><select id="categoryFilter"><option value="">All categories</option></select><select id="severityFilter"><option value="">All severities</option></select><select id="statusFilter"><option value="">All statuses</option></select><button id="resetBtn" type="button">Reset</button></section>
+<main class="main-grid"><section class="panel map-panel"><div class="panel-head"><div><span class="panel-kicker">GLOBAL VIEW</span><h2>Interactive Crisis Map</h2></div><div class="legend" id="legend"></div></div><div id="map"></div></section><aside class="panel detail-panel"><div class="panel-head"><div><span class="panel-kicker">SELECTED EVENT</span><h2 id="detailTitle">Choose a crisis</h2></div></div><div id="detailContent" class="detail-empty">Click a marker or crisis record to inspect its profile.</div></aside></main>
+<section class="bottom-grid"><section class="panel"><div class="panel-head"><div><span class="panel-kicker">ACTIVE INTELLIGENCE</span><h2>Crisis Feed</h2></div><div class="feed-count" id="feedCount"></div></div><div class="table-wrap"><table><thead><tr><th>Crisis</th><th>Region</th><th>Category</th><th>Severity</th><th>Trend</th><th>Status</th></tr></thead><tbody id="crisisTable"></tbody></table></div></section><section class="panel chart-panel"><div class="panel-head"><div><span class="panel-kicker">DISTRIBUTION</span><h2>Category Breakdown</h2></div></div><div id="categoryBars" class="bars"></div></section></section>
+<footer><span>Global Crisis Monitor v1.0</span><span>Sample records for demonstration.</span></footer>
+</div>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="data.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
