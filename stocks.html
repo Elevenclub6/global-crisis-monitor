@@ -43,15 +43,14 @@
     <label>Hedge Fund Trend<select id="sHedgePrimary"><option>Positive</option><option selected>Negative</option></select></label>
     <label>Price<input id="sPrice" type="number" min="0" step="0.01" placeholder="100.00"></label>
 
-    <label>Target<input id="sTarget" type="number" min="0" step="0.01" placeholder="125.00"></label>
-    <label>12M Forecast<select id="sForecast"><option>Strong Buy</option><option>Buy</option><option selected>Neutral</option><option>Sell</option><option>Strong Sell</option></select></label>
+        <label>12M Forecast<select id="sForecast"><option>Strong Buy</option><option>Buy</option><option selected>Neutral</option><option>Sell</option><option>Strong Sell</option></select></label>
     <label>Insider Trend<select id="sInsider"><option>Bought Shares</option><option selected>Neutral</option><option>Sold Shares</option></select></label>
     <label>News Trend<select id="sNewsTrend"><option>Positive</option><option selected>Neutral</option><option>Negative</option></select></label>
 
     <label>SMA / Technicals<select id="sTechnicals"><option>Positive</option><option selected>Neutral</option><option>Negative</option></select></label>
     <label>12M Momentum %<input id="sMomentum" type="number" step="0.01" placeholder="26.64"></label>
-    <label>Return on Equity %<input id="sROE" type="number" step="0.01" placeholder="21.89"></label>
-    <label>Asset Growth %<input id="sAssetGrowth" type="number" step="0.01" placeholder="4"></label>
+    <label>Shares Owned<input id="sShares" type="number" min="0" step="0.0001" placeholder="10"></label>
+    <label>Current Value $<input id="sCurrentValue" type="number" min="0" step="0.01" placeholder="5322.30"></label>
 
     <label>Analyst High Target<input id="sAnalystHigh" type="number" min="0" step="0.01" placeholder="894.00"></label>
     <label>Analyst Avg Target<input id="sAnalystAvg" type="number" min="0" step="0.01" placeholder="775.45"></label>
@@ -88,7 +87,7 @@
 <section class="bottom-grid">
   <section class="panel">
     <div class="panel-head"><div><span class="panel-kicker">WATCHLIST</span><h2>Stock Feed</h2></div><div id="stockCount" class="small-note"></div></div>
-    <div class="table-wrap"><table><thead><tr><th>Ticker</th><th>Company</th><th>Sector</th><th>Smart Score</th><th>Investor Trend</th><th>Hedge Fund Trend</th><th>Status</th><th>Actions</th></tr></thead><tbody id="stockTable"></tbody></table></div>
+    <div class="table-wrap"><table><thead><tr><th>Ticker</th><th>Company</th><th>Sector</th><th>Smart Score</th><th>Investor Trend</th><th>Hedge Fund Trend</th><th>Shares</th><th>Current Value</th><th>Status</th><th>Actions</th></tr></thead><tbody id="stockTable"></tbody></table></div>
   </section>
   <section class="panel">
     <div class="panel-head"><div><span class="panel-kicker">SECTOR MIX</span><h2>Sector Breakdown</h2></div></div>
@@ -96,7 +95,7 @@
   </section>
 </section>
 
-<footer><span>Stock Universe Monitor v1.3</span><span>For research organization, not financial advice.</span></footer>
+<footer><span>Stock Universe Monitor v1.4</span><span>For research organization, not financial advice.</span></footer>
 </div>
 <script src="stocks-data.js"></script>
 <script src="stocks.js"></script>
