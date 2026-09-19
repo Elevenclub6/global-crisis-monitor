@@ -31,31 +31,33 @@ function renderKpis(rows){
  '<div class="kpi"><div class="kpi-label">Portfolio value</div><div class="kpi-value">$'+portfolio.toLocaleString(undefined,{maximumFractionDigits:0})+'</div><div class="kpi-sub">'+owned+' owned stocks</div></div>';
 }
 function renderChart(rows){
- const svg=q("#stockChart"),W=900,H=620,p={l:92,r:40,t:42,b:72};
- const validPrices=rows.map(d=>Number(d.price)||0).filter(v=>v>0);
- const maxPrice=Math.max(100,...validPrices);
- const xMax=Math.ceil(maxPrice/100)*100;
+ const svg=q("#stockChart"),W=900,H=620,p={l:120,r:38,t:54,b:82};
+ const plotted=rows.filter(d=>Number(d.price)>0&&Number(d.analystAvg)>0);
  const roiValues=[];
- rows.forEach(d=>[d.analystLow,d.analystAvg,d.analystHigh].forEach(t=>{const v=roi(Number(d.price)||0,Number(t)||0);if(v!==null)roiValues.push(v)}));
- const yMin=Math.min(-20,...roiValues),yMax=Math.max(50,...roiValues);
+ plotted.forEach(d=>[d.analystLow,d.analystAvg,d.analystHigh].forEach(t=>{const v=roi(Number(d.price)||0,Number(t)||0);if(v!==null)roiValues.push(v)}));
+ const yMin=Math.min(-20,...roiValues),yMax=Math.max(40,...roiValues);
  const yLo=Math.floor(yMin/10)*10,yHi=Math.ceil(yMax/10)*10;
- const xScale=v=>p.l+(Math.max(0,Math.min(xMax,v))/xMax)*(W-p.l-p.r);
  const yScale=v=>H-p.b-((v-yLo)/(yHi-yLo))*(H-p.t-p.b);
+ const slot=plotted.length?((W-p.l-p.r)/plotted.length):(W-p.l-p.r);
  let out='<rect class="chart-bg" x="0" y="0" width="'+W+'" height="'+H+'" rx="16"/>';
- for(let i=0;i<=5;i++){const val=xMax*i/5,x=xScale(val);out+='<line class="grid-line" x1="'+x+'" y1="'+p.t+'" x2="'+x+'" y2="'+(H-p.b)+'"/><text class="axis-label" x="'+x+'" y="'+(H-38)+'" text-anchor="middle">$'+Math.round(val)+'</text>'}
- for(let i=0;i<=6;i++){const val=yLo+(yHi-yLo)*i/6,y=yScale(val);out+='<line class="grid-line" x1="'+p.l+'" y1="'+y+'" x2="'+(W-p.r)+'" y2="'+y+'"/><text class="axis-label" x="75" y="'+(y+4)+'" text-anchor="end">'+Math.round(val)+'%</text>'}
- if(yLo<0&&yHi>0){const y0=yScale(0);out+='<line x1="'+p.l+'" y1="'+y0+'" x2="'+(W-p.r)+'" y2="'+y0+'" stroke="#EF4444" stroke-width="1.4" stroke-dasharray="6 6"/>'}
- out+='<text class="axis-label" x="'+(W/2)+'" y="'+(H-10)+'" text-anchor="middle">CURRENT PRICE →</text>';
- out+='<text class="axis-label" transform="translate(20 '+(H/2)+') rotate(-90)" text-anchor="middle">ESTIMATED 12M ROI →</text>';
- rows.forEach(d=>{
-   const price=Number(d.price)||0;if(price<=0)return;
+ for(let i=0;i<=6;i++){const val=yLo+(yHi-yLo)*i/6,y=yScale(val);out+='<line class="grid-line" x1="'+p.l+'" y1="'+y+'" x2="'+(W-p.r)+'" y2="'+y+'"/><text class="axis-label" x="'+(p.l-16)+'" y="'+(y+4)+'" text-anchor="end">'+Math.round(val)+'%</text>'}
+ if(yLo<0&&yHi>0){const y0=yScale(0);out+='<line x1="'+p.l+'" y1="'+y0+'" x2="'+(W-p.r)+'" y2="'+y0+'" stroke="#B91C1C" stroke-width="1.4" stroke-dasharray="6 6"/><text class="axis-label" x="'+(W-p.r-4)+'" y="'+(y0-8)+'" text-anchor="end">0% break-even</text>'}
+ plotted.forEach((d,i)=>{
+   const price=Number(d.price)||0;
    const low=roi(price,Number(d.analystLow)||0),avg=roi(price,Number(d.analystAvg)||0),high=roi(price,Number(d.analystHigh)||0);
-   if(avg===null)return;
-   const x=xScale(price),y=yScale(avg),r=d.hedgeFund==="Positive"?27:19;
-   if(low!==null&&high!==null){out+='<line x1="'+x+'" y1="'+yScale(low)+'" x2="'+x+'" y2="'+yScale(high)+'" stroke="'+(statusColors[d.status]||"#3B82F6")+'" stroke-width="5" stroke-linecap="round" opacity=".35"/>'}
-   out+='<g class="stock-node" data-id="'+d.id+'"><circle class="bubble" cx="'+x+'" cy="'+y+'" r="'+r+'" fill="'+(statusColors[d.status]||"#3B82F6")+'" fill-opacity=".82"></circle><text class="bubble-label" x="'+x+'" y="'+y+'">'+esc(d.ticker)+'</text></g>';
+   const x=p.l+slot*i+slot/2;
+   if(low!==null&&high!==null){
+     out+='<line x1="'+x+'" y1="'+yScale(low)+'" x2="'+x+'" y2="'+yScale(high)+'" stroke="#CFC7BB" stroke-width="10" stroke-linecap="round"/>';
+     out+='<circle cx="'+x+'" cy="'+yScale(low)+'" r="5" fill="#B91C1C"/><circle cx="'+x+'" cy="'+yScale(high)+'" r="5" fill="#0F766E"/>';
+   }
+   out+='<g class="stock-node" data-id="'+d.id+'"><circle class="bubble" cx="'+x+'" cy="'+yScale(avg)+'" r="24" fill="'+(statusColors[d.status]||"#3B82F6")+'" fill-opacity=".9"></circle><text class="bubble-label" x="'+x+'" y="'+yScale(avg)+'">'+esc(d.ticker)+'</text></g>';
+   out+='<text class="axis-label" x="'+x+'" y="'+(H-46)+'" text-anchor="middle">'+esc(d.ticker)+'</text>';
+   out+='<text class="axis-label" x="'+x+'" y="'+(H-27)+'" text-anchor="middle">$'+price.toFixed(2)+'</text>';
  });
- svg.innerHTML=out;svg.querySelectorAll(".stock-node").forEach(n=>n.addEventListener("click",()=>renderDetail(data.find(d=>d.id===n.dataset.id))));
+ out+='<text class="axis-label" x="'+(W/2)+'" y="'+(H-8)+'" text-anchor="middle">STOCK / CURRENT PRICE</text>';
+ out+='<text class="axis-label" transform="translate(22 '+(H/2)+') rotate(-90)" text-anchor="middle">12M ESTIMATED ROI →</text>';
+ svg.innerHTML=out;
+ svg.querySelectorAll(".stock-node").forEach(n=>n.addEventListener("click",()=>renderDetail(data.find(d=>d.id===n.dataset.id))));
 }
 function renderTable(rows){
  q("#stockTable").innerHTML=rows.map(d=>'<tr data-id="'+d.id+'"><td><strong>'+esc(d.ticker)+'</strong></td><td>'+esc(d.company)+'</td><td>'+esc(d.sector)+'</td><td>'+d.smartScore+'/10</td><td>'+esc(d.investorTrend)+'</td><td>'+esc(d.hedgeFund)+'</td><td>'+(d.sharesOwned?Number(d.sharesOwned).toLocaleString(undefined,{maximumFractionDigits:4}):'—')+'</td><td>'+(d.currentValue?'$'+Number(d.currentValue).toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2}):'—')+'</td><td style="color:'+(statusColors[d.status]||"#fff")+'">'+esc(d.status)+'</td><td><div class="action-group"><button type="button" class="mini-btn edit" data-edit="'+d.id+'">Edit</button><button type="button" class="mini-btn delete" data-delete="'+d.id+'">Delete</button></div></td></tr>').join("");
