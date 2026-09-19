@@ -82,6 +82,1195 @@ function renderTable(rows){
   '<td>'+d.smartScore+'/10</td>'+
   '<td>'+esc(d.investorTrend)+'</td>'+
   '<td>'+esc(d.hedgeFund)+'</td>'+
+  '<td>'+(d.sharesOwned?Number(d.sharesOwned).toLocaleString(undefined,{maximumFractionDigits:4}):'—')+'</td>'+
+  '<td>'+(d.currentValue?'
+  '<td><div class="action-group"><button type="button" class="mini-btn edit" data-edit="'+d.id+'">Edit</button><button type="button" class="mini-btn delete" data-delete="'+d.id+'">Delete</button></div></td>'+
+  '</tr>').join("");
+ q("#stockTable").querySelectorAll("tr").forEach(r=>r.addEventListener("click",e=>{if(e.target.closest("button"))return;renderDetail(data.find(d=>d.id===r.dataset.id))}));
+ q("#stockTable").querySelectorAll("[data-edit]").forEach(b=>b.addEventListener("click",()=>beginEdit(b.dataset.edit)));
+ q("#stockTable").querySelectorAll("[data-delete]").forEach(b=>b.addEventListener("click",()=>deleteStock(b.dataset.delete)));
+ q("#stockCount").textContent=rows.length+" stocks";
+}
+
+function renderBars(rows){
+ const c={};rows.forEach(d=>c[d.sector]=(c[d.sector]||0)+1);
+ const max=Math.max(1,...Object.values(c));
+ q("#sectorBars").innerHTML=Object.entries(c).sort((a,b)=>b[1]-a[1]).map(([k,v])=>
+  '<div class="bar-row"><div class="bar-label">'+esc(k)+'</div><div class="bar-track"><div class="bar-fill" style="width:'+(v/max*100)+'%;background:'+(sectorColors[k]||"#3B82F6")+'"></div></div><div class="bar-value">'+v+'</div></div>').join("");
+}
+
+function renderDetail(d){
+ if(!d){q("#stockDetailTitle").textContent="Choose a stock";q("#stockDetailContent").innerHTML='<div class="detail-empty">Click a bubble or stock row to inspect your thesis.</div>';return}
+ q("#stockDetailTitle").textContent=d.ticker+" · "+d.company;
+ q("#stockDetailContent").innerHTML=
+ '<div class="detail">'+
+ '<div class="badge-row"><span class="badge" style="color:'+(statusColors[d.status]||"#fff")+'">'+esc(d.status.toUpperCase())+'</span><span class="badge">'+esc(d.sector.toUpperCase())+'</span><span class="badge">'+esc(d.investorTrend.toUpperCase())+'</span></div>'+
+ '<p class="description">'+esc(d.thesis)+'</p>'+
+ '<div class="detail-grid">'+
+ '<div class="metric"><div class="metric-label">Smart Score</div><div class="metric-value">'+d.smartScore+'/10</div></div>'+
+ '<div class="metric"><div class="metric-label">Investor Trend</div><div class="metric-value">'+esc(d.investorTrend)+'</div></div>'+
+ '<div class="metric"><div class="metric-label">Hedge Fund Trend</div><div class="metric-value">'+esc(d.hedgeFund)+'</div></div>'+
+ '<div class="metric"><div class="metric-label">Price</div><div class="metric-value">'+(d.price?'
+ '</div>'+
+ '<div class="research-section"><h3>Research Signals</h3><div class="signal-grid">'+
+ '<div class="signal-card"><div class="signal-label">12M Forecast</div><div class="signal-value">'+esc(d.forecast||"—")+'</div></div>'+
+ '<div class="signal-card"><div class="signal-label">Smart Score</div><div class="signal-value">'+d.smartScore+'/10</div><div class="score-meter"><span class="score-marker" style="left:'+Math.max(0,Math.min(100,((d.smartScore||1)-1)/9*100))+'%"></span></div></div>'+
+ '<div class="signal-card"><div class="signal-label">Hedge Fund Trend</div><div class="signal-value">'+esc(d.hedgeFund||"—")+'</div></div>'+
+ '<div class="signal-card"><div class="signal-label">Insider Trend</div><div class="signal-value">'+esc(d.insider||"—")+'</div></div>'+
+ '<div class="signal-card"><div class="signal-label">Investor Trend</div><div class="signal-value">'+esc(d.investorTrend||"—")+'</div></div>'+
+ '<div class="signal-card"><div class="signal-label">News Trend</div><div class="signal-value">'+esc(d.newsTrend||"—")+'</div></div>'+
+ '<div class="signal-card"><div class="signal-label">Technicals</div><div class="signal-value">'+esc(d.technicals||"—")+'</div></div>'+
+ '<div class="signal-card"><div class="signal-label">12M Momentum</div><div class="signal-value">'+(d.momentum?Number(d.momentum).toFixed(2)+'%':'—')+'</div></div>'+
+ '<div class="signal-card"><div class="signal-label">Shares Owned</div><div class="signal-value">'+(d.sharesOwned?Number(d.sharesOwned).toLocaleString(undefined,{maximumFractionDigits:4}):'—')+'</div></div>'+
+ '<div class="signal-card"><div class="signal-label">Current Value</div><div class="signal-value">'+(d.currentValue?'
+ '</div></div>'+
+ '<div class="research-section"><h3>Analyst 12-Month Targets</h3><div class="forecast-range">'+
+ '<div class="forecast-item">Low<strong>'+(d.analystLow?'$'+Number(d.analystLow).toFixed(2):'—')+'</strong></div>'+
+ '<div class="forecast-item">Average<strong>'+(d.analystAvg?'$'+Number(d.analystAvg).toFixed(2):'—')+'</strong></div>'+
+ '<div class="forecast-item">High<strong>'+(d.analystHigh?'$'+Number(d.analystHigh).toFixed(2):'—')+'</strong></div>'+
+ '</div></div>'+
+ '<p class="description"><strong>Catalyst / Notes:</strong><br>'+esc(d.catalyst||"—")+'</p>'+
+ '<div class="detail-actions"><button type="button" class="mini-btn edit" id="detailEdit">Edit Stock</button><button type="button" class="mini-btn delete" id="detailDelete">Delete Stock</button></div>'+
+ '</div>';
+ q("#detailEdit").addEventListener("click",()=>beginEdit(d.id));
+ q("#detailDelete").addEventListener("click",()=>deleteStock(d.id));
+}
+
+function render(){const rows=filtered();renderKpis(rows);renderChart(rows);renderTable(rows);renderBars(rows)}
+
+function formValues(){return{
+ ticker:q("#sTicker").value.trim().toUpperCase(),
+ company:q("#sCompany").value.trim(),
+ sector:q("#sSector").value.trim(),
+ status:q("#sStatus").value,
+ smartScore:Number(q("#sSmartScorePrimary").value),
+ investorTrend:q("#sInvestorPrimary").value,
+ hedgeFund:q("#sHedgePrimary").value,
+ price:Number(q("#sPrice").value)||0,
+ sharesOwned:Number(q("#sShares").value)||0,
+ currentValue:Number(q("#sCurrentValue").value)||0,
+ forecast:q("#sForecast").value,
+ insider:q("#sInsider").value,
+ newsTrend:q("#sNewsTrend").value,
+ technicals:q("#sTechnicals").value,
+ momentum:Number(q("#sMomentum").value)||0,
+
+ analystHigh:Number(q("#sAnalystHigh").value)||0,
+ analystAvg:Number(q("#sAnalystAvg").value)||0,
+ analystLow:Number(q("#sAnalystLow").value)||0,
+ thesis:q("#sThesis").value.trim(),
+ catalyst:q("#sCatalyst").value.trim()
+}}
+
+function beginEdit(id){
+ const d=data.find(x=>x.id===id);if(!d)return;
+ editingId=id;
+ q("#stockForm").classList.add("editing");
+ q("#stockFormTitle").textContent="Edit Stock Idea";
+ q("#stockSubmitBtn").textContent="Save Changes";
+ q("#sTicker").value=d.ticker;q("#sCompany").value=d.company;q("#sSector").value=d.sector;q("#sStatus").value=d.status;
+ q("#sSmartScorePrimary").value=d.smartScore||5;q("#sInvestorPrimary").value=d.investorTrend||"Negative";q("#sHedgePrimary").value=d.hedgeFund||"Negative";
+ q("#sPrice").value=d.price||"";q("#sShares").value=d.sharesOwned||"";q("#sCurrentValue").value=d.currentValue||"";q("#sForecast").value=d.forecast||"Neutral";q("#sInsider").value=d.insider||"Neutral";
+ q("#sNewsTrend").value=d.newsTrend||"Neutral";q("#sTechnicals").value=d.technicals||"Neutral";q("#sMomentum").value=d.momentum||"";
+ q("#sAnalystHigh").value=d.analystHigh||"";q("#sAnalystAvg").value=d.analystAvg||"";q("#sAnalystLow").value=d.analystLow||"";
+ q("#sThesis").value=d.thesis;q("#sCatalyst").value=d.catalyst||"";
+ q("#stockMessage").textContent="Editing "+d.ticker+". Save changes to replace this entry.";
+ q("#stockForm").scrollIntoView({behavior:"smooth",block:"start"});
+}
+
+function cancelEdit(){
+ editingId=null;q("#stockForm").reset();q("#stockForm").classList.remove("editing");
+ q("#stockFormTitle").textContent="Add Stock Idea";q("#stockSubmitBtn").textContent="Add to Universe";q("#stockMessage").textContent="";
+}
+
+function deleteStock(id){
+ const idx=data.findIndex(d=>d.id===id);if(idx<0)return;
+ const removed=data[idx];if(!confirm("Delete "+removed.ticker+" from the stock universe?"))return;
+ data.splice(idx,1);if(editingId===id)cancelEdit();syncFilterOptions();render();renderDetail(data[0]||null);q("#stockMessage").textContent=removed.ticker+" deleted from this session.";
+}
+
+[search,sectorFilter,statusFilter,investorFilter].forEach(el=>el.addEventListener("input",render));
+q("#stockReset").addEventListener("click",()=>{search.value="";sectorFilter.value="";statusFilter.value="";investorFilter.value="";render()});
+q("#cancelEditBtn").addEventListener("click",cancelEdit);
+q("#stockForm").addEventListener("reset",()=>setTimeout(()=>{if(!editingId)q("#stockMessage").textContent=""},0));
+q("#stockForm").addEventListener("submit",e=>{
+ e.preventDefault();const values=formValues();
+ if(editingId){
+   const d=data.find(x=>x.id===editingId);Object.assign(d,values);
+   const selected={...d};cancelEdit();syncFilterOptions();render();renderDetail(selected);q("#stockMessage").textContent=selected.ticker+" updated for this session.";
+ }else{
+   const entry={id:"USR-"+Date.now(),...values};data.unshift(entry);syncFilterOptions();q("#stockForm").reset();q("#stockMessage").textContent="Added to your stock universe for this session.";
+   search.value="";sectorFilter.value="";statusFilter.value="";investorFilter.value="";render();renderDetail(entry);
+ }
+});
+syncFilterOptions();render();renderDetail(data[0]);+Number(d.currentValue).toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2}):'—')+'</td>'+
+  '<td style="color:'+(statusColors[d.status]||"#fff")+'">'+esc(d.status)+'</td>'+
+  '<td><div class="action-group"><button type="button" class="mini-btn edit" data-edit="'+d.id+'">Edit</button><button type="button" class="mini-btn delete" data-delete="'+d.id+'">Delete</button></div></td>'+
+  '</tr>').join("");
+ q("#stockTable").querySelectorAll("tr").forEach(r=>r.addEventListener("click",e=>{if(e.target.closest("button"))return;renderDetail(data.find(d=>d.id===r.dataset.id))}));
+ q("#stockTable").querySelectorAll("[data-edit]").forEach(b=>b.addEventListener("click",()=>beginEdit(b.dataset.edit)));
+ q("#stockTable").querySelectorAll("[data-delete]").forEach(b=>b.addEventListener("click",()=>deleteStock(b.dataset.delete)));
+ q("#stockCount").textContent=rows.length+" stocks";
+}
+
+function renderBars(rows){
+ const c={};rows.forEach(d=>c[d.sector]=(c[d.sector]||0)+1);
+ const max=Math.max(1,...Object.values(c));
+ q("#sectorBars").innerHTML=Object.entries(c).sort((a,b)=>b[1]-a[1]).map(([k,v])=>
+  '<div class="bar-row"><div class="bar-label">'+esc(k)+'</div><div class="bar-track"><div class="bar-fill" style="width:'+(v/max*100)+'%;background:'+(sectorColors[k]||"#3B82F6")+'"></div></div><div class="bar-value">'+v+'</div></div>').join("");
+}
+
+function renderDetail(d){
+ if(!d){q("#stockDetailTitle").textContent="Choose a stock";q("#stockDetailContent").innerHTML='<div class="detail-empty">Click a bubble or stock row to inspect your thesis.</div>';return}
+ q("#stockDetailTitle").textContent=d.ticker+" · "+d.company;
+ q("#stockDetailContent").innerHTML=
+ '<div class="detail">'+
+ '<div class="badge-row"><span class="badge" style="color:'+(statusColors[d.status]||"#fff")+'">'+esc(d.status.toUpperCase())+'</span><span class="badge">'+esc(d.sector.toUpperCase())+'</span><span class="badge">'+esc(d.investorTrend.toUpperCase())+'</span></div>'+
+ '<p class="description">'+esc(d.thesis)+'</p>'+
+ '<div class="detail-grid">'+
+ '<div class="metric"><div class="metric-label">Smart Score</div><div class="metric-value">'+d.smartScore+'/10</div></div>'+
+ '<div class="metric"><div class="metric-label">Investor Trend</div><div class="metric-value">'+esc(d.investorTrend)+'</div></div>'+
+ '<div class="metric"><div class="metric-label">Hedge Fund Trend</div><div class="metric-value">'+esc(d.hedgeFund)+'</div></div>'+
+ '<div class="metric"><div class="metric-label">Price</div><div class="metric-value">'+(d.price?'$'+Number(d.price).toFixed(2):'—')+'</div></div>'+
+ '<div class="metric"><div class="metric-label">Target</div><div class="metric-value">'+(d.target?'$'+Number(d.target).toFixed(2):'—')+'</div></div>'+
+ '</div>'+
+ '<div class="research-section"><h3>Research Signals</h3><div class="signal-grid">'+
+ '<div class="signal-card"><div class="signal-label">12M Forecast</div><div class="signal-value">'+esc(d.forecast||"—")+'</div></div>'+
+ '<div class="signal-card"><div class="signal-label">Smart Score</div><div class="signal-value">'+d.smartScore+'/10</div><div class="score-meter"><span class="score-marker" style="left:'+Math.max(0,Math.min(100,((d.smartScore||1)-1)/9*100))+'%"></span></div></div>'+
+ '<div class="signal-card"><div class="signal-label">Hedge Fund Trend</div><div class="signal-value">'+esc(d.hedgeFund||"—")+'</div></div>'+
+ '<div class="signal-card"><div class="signal-label">Insider Trend</div><div class="signal-value">'+esc(d.insider||"—")+'</div></div>'+
+ '<div class="signal-card"><div class="signal-label">Investor Trend</div><div class="signal-value">'+esc(d.investorTrend||"—")+'</div></div>'+
+ '<div class="signal-card"><div class="signal-label">News Trend</div><div class="signal-value">'+esc(d.newsTrend||"—")+'</div></div>'+
+ '<div class="signal-card"><div class="signal-label">Technicals</div><div class="signal-value">'+esc(d.technicals||"—")+'</div></div>'+
+ '<div class="signal-card"><div class="signal-label">12M Momentum</div><div class="signal-value">'+(d.momentum?Number(d.momentum).toFixed(2)+'%':'—')+'</div></div>'+
+ '<div class="signal-card"><div class="signal-label">Return on Equity</div><div class="signal-value">'+(d.roe?Number(d.roe).toFixed(2)+'%':'—')+'</div></div>'+
+ '<div class="signal-card"><div class="signal-label">Asset Growth</div><div class="signal-value">'+(d.assetGrowth?Number(d.assetGrowth).toFixed(2)+'%':'—')+'</div></div>'+
+ '</div></div>'+
+ '<div class="research-section"><h3>Analyst 12-Month Targets</h3><div class="forecast-range">'+
+ '<div class="forecast-item">Low<strong>'+(d.analystLow?'$'+Number(d.analystLow).toFixed(2):'—')+'</strong></div>'+
+ '<div class="forecast-item">Average<strong>'+(d.analystAvg?'$'+Number(d.analystAvg).toFixed(2):'—')+'</strong></div>'+
+ '<div class="forecast-item">High<strong>'+(d.analystHigh?'$'+Number(d.analystHigh).toFixed(2):'—')+'</strong></div>'+
+ '</div></div>'+
+ '<p class="description"><strong>Catalyst / Notes:</strong><br>'+esc(d.catalyst||"—")+'</p>'+
+ '<div class="detail-actions"><button type="button" class="mini-btn edit" id="detailEdit">Edit Stock</button><button type="button" class="mini-btn delete" id="detailDelete">Delete Stock</button></div>'+
+ '</div>';
+ q("#detailEdit").addEventListener("click",()=>beginEdit(d.id));
+ q("#detailDelete").addEventListener("click",()=>deleteStock(d.id));
+}
+
+function render(){const rows=filtered();renderKpis(rows);renderChart(rows);renderTable(rows);renderBars(rows)}
+
+function formValues(){return{
+ ticker:q("#sTicker").value.trim().toUpperCase(),
+ company:q("#sCompany").value.trim(),
+ sector:q("#sSector").value.trim(),
+ status:q("#sStatus").value,
+ smartScore:Number(q("#sSmartScorePrimary").value),
+ investorTrend:q("#sInvestorPrimary").value,
+ hedgeFund:q("#sHedgePrimary").value,
+ price:Number(q("#sPrice").value)||0,
+ target:Number(q("#sTarget").value)||0,
+ forecast:q("#sForecast").value,
+ insider:q("#sInsider").value,
+ newsTrend:q("#sNewsTrend").value,
+ technicals:q("#sTechnicals").value,
+ momentum:Number(q("#sMomentum").value)||0,
+ roe:Number(q("#sROE").value)||0,
+ assetGrowth:Number(q("#sAssetGrowth").value)||0,
+ analystHigh:Number(q("#sAnalystHigh").value)||0,
+ analystAvg:Number(q("#sAnalystAvg").value)||0,
+ analystLow:Number(q("#sAnalystLow").value)||0,
+ thesis:q("#sThesis").value.trim(),
+ catalyst:q("#sCatalyst").value.trim()
+}}
+
+function beginEdit(id){
+ const d=data.find(x=>x.id===id);if(!d)return;
+ editingId=id;
+ q("#stockForm").classList.add("editing");
+ q("#stockFormTitle").textContent="Edit Stock Idea";
+ q("#stockSubmitBtn").textContent="Save Changes";
+ q("#sTicker").value=d.ticker;q("#sCompany").value=d.company;q("#sSector").value=d.sector;q("#sStatus").value=d.status;
+ q("#sSmartScorePrimary").value=d.smartScore||5;q("#sInvestorPrimary").value=d.investorTrend||"Negative";q("#sHedgePrimary").value=d.hedgeFund||"Negative";
+ q("#sPrice").value=d.price||"";q("#sTarget").value=d.target||"";q("#sForecast").value=d.forecast||"Neutral";q("#sInsider").value=d.insider||"Neutral";
+ q("#sNewsTrend").value=d.newsTrend||"Neutral";q("#sTechnicals").value=d.technicals||"Neutral";q("#sMomentum").value=d.momentum||"";q("#sROE").value=d.roe||"";
+ q("#sAssetGrowth").value=d.assetGrowth||"";q("#sAnalystHigh").value=d.analystHigh||"";q("#sAnalystAvg").value=d.analystAvg||"";q("#sAnalystLow").value=d.analystLow||"";
+ q("#sThesis").value=d.thesis;q("#sCatalyst").value=d.catalyst||"";
+ q("#stockMessage").textContent="Editing "+d.ticker+". Save changes to replace this entry.";
+ q("#stockForm").scrollIntoView({behavior:"smooth",block:"start"});
+}
+
+function cancelEdit(){
+ editingId=null;q("#stockForm").reset();q("#stockForm").classList.remove("editing");
+ q("#stockFormTitle").textContent="Add Stock Idea";q("#stockSubmitBtn").textContent="Add to Universe";q("#stockMessage").textContent="";
+}
+
+function deleteStock(id){
+ const idx=data.findIndex(d=>d.id===id);if(idx<0)return;
+ const removed=data[idx];if(!confirm("Delete "+removed.ticker+" from the stock universe?"))return;
+ data.splice(idx,1);if(editingId===id)cancelEdit();syncFilterOptions();render();renderDetail(data[0]||null);q("#stockMessage").textContent=removed.ticker+" deleted from this session.";
+}
+
+[search,sectorFilter,statusFilter,investorFilter].forEach(el=>el.addEventListener("input",render));
+q("#stockReset").addEventListener("click",()=>{search.value="";sectorFilter.value="";statusFilter.value="";investorFilter.value="";render()});
+q("#cancelEditBtn").addEventListener("click",cancelEdit);
+q("#stockForm").addEventListener("reset",()=>setTimeout(()=>{if(!editingId)q("#stockMessage").textContent=""},0));
+q("#stockForm").addEventListener("submit",e=>{
+ e.preventDefault();const values=formValues();
+ if(editingId){
+   const d=data.find(x=>x.id===editingId);Object.assign(d,values);
+   const selected={...d};cancelEdit();syncFilterOptions();render();renderDetail(selected);q("#stockMessage").textContent=selected.ticker+" updated for this session.";
+ }else{
+   const entry={id:"USR-"+Date.now(),...values};data.unshift(entry);syncFilterOptions();q("#stockForm").reset();q("#stockMessage").textContent="Added to your stock universe for this session.";
+   search.value="";sectorFilter.value="";statusFilter.value="";investorFilter.value="";render();renderDetail(entry);
+ }
+});
+syncFilterOptions();render();renderDetail(data[0]);+Number(d.price).toFixed(2):'—')+'</div></div>'+
+ '<div class="metric"><div class="metric-label">Shares Owned</div><div class="metric-value">'+(d.sharesOwned?Number(d.sharesOwned).toLocaleString(undefined,{maximumFractionDigits:4}):'—')+'</div></div>'+
+ '<div class="metric"><div class="metric-label">Current Value</div><div class="metric-value">'+(d.currentValue?'
+ '</div>'+
+ '<div class="research-section"><h3>Research Signals</h3><div class="signal-grid">'+
+ '<div class="signal-card"><div class="signal-label">12M Forecast</div><div class="signal-value">'+esc(d.forecast||"—")+'</div></div>'+
+ '<div class="signal-card"><div class="signal-label">Smart Score</div><div class="signal-value">'+d.smartScore+'/10</div><div class="score-meter"><span class="score-marker" style="left:'+Math.max(0,Math.min(100,((d.smartScore||1)-1)/9*100))+'%"></span></div></div>'+
+ '<div class="signal-card"><div class="signal-label">Hedge Fund Trend</div><div class="signal-value">'+esc(d.hedgeFund||"—")+'</div></div>'+
+ '<div class="signal-card"><div class="signal-label">Insider Trend</div><div class="signal-value">'+esc(d.insider||"—")+'</div></div>'+
+ '<div class="signal-card"><div class="signal-label">Investor Trend</div><div class="signal-value">'+esc(d.investorTrend||"—")+'</div></div>'+
+ '<div class="signal-card"><div class="signal-label">News Trend</div><div class="signal-value">'+esc(d.newsTrend||"—")+'</div></div>'+
+ '<div class="signal-card"><div class="signal-label">Technicals</div><div class="signal-value">'+esc(d.technicals||"—")+'</div></div>'+
+ '<div class="signal-card"><div class="signal-label">12M Momentum</div><div class="signal-value">'+(d.momentum?Number(d.momentum).toFixed(2)+'%':'—')+'</div></div>'+
+ '<div class="signal-card"><div class="signal-label">Return on Equity</div><div class="signal-value">'+(d.roe?Number(d.roe).toFixed(2)+'%':'—')+'</div></div>'+
+ '<div class="signal-card"><div class="signal-label">Asset Growth</div><div class="signal-value">'+(d.assetGrowth?Number(d.assetGrowth).toFixed(2)+'%':'—')+'</div></div>'+
+ '</div></div>'+
+ '<div class="research-section"><h3>Analyst 12-Month Targets</h3><div class="forecast-range">'+
+ '<div class="forecast-item">Low<strong>'+(d.analystLow?'$'+Number(d.analystLow).toFixed(2):'—')+'</strong></div>'+
+ '<div class="forecast-item">Average<strong>'+(d.analystAvg?'$'+Number(d.analystAvg).toFixed(2):'—')+'</strong></div>'+
+ '<div class="forecast-item">High<strong>'+(d.analystHigh?'$'+Number(d.analystHigh).toFixed(2):'—')+'</strong></div>'+
+ '</div></div>'+
+ '<p class="description"><strong>Catalyst / Notes:</strong><br>'+esc(d.catalyst||"—")+'</p>'+
+ '<div class="detail-actions"><button type="button" class="mini-btn edit" id="detailEdit">Edit Stock</button><button type="button" class="mini-btn delete" id="detailDelete">Delete Stock</button></div>'+
+ '</div>';
+ q("#detailEdit").addEventListener("click",()=>beginEdit(d.id));
+ q("#detailDelete").addEventListener("click",()=>deleteStock(d.id));
+}
+
+function render(){const rows=filtered();renderKpis(rows);renderChart(rows);renderTable(rows);renderBars(rows)}
+
+function formValues(){return{
+ ticker:q("#sTicker").value.trim().toUpperCase(),
+ company:q("#sCompany").value.trim(),
+ sector:q("#sSector").value.trim(),
+ status:q("#sStatus").value,
+ smartScore:Number(q("#sSmartScorePrimary").value),
+ investorTrend:q("#sInvestorPrimary").value,
+ hedgeFund:q("#sHedgePrimary").value,
+ price:Number(q("#sPrice").value)||0,
+ target:Number(q("#sTarget").value)||0,
+ forecast:q("#sForecast").value,
+ insider:q("#sInsider").value,
+ newsTrend:q("#sNewsTrend").value,
+ technicals:q("#sTechnicals").value,
+ momentum:Number(q("#sMomentum").value)||0,
+ roe:Number(q("#sROE").value)||0,
+ assetGrowth:Number(q("#sAssetGrowth").value)||0,
+ analystHigh:Number(q("#sAnalystHigh").value)||0,
+ analystAvg:Number(q("#sAnalystAvg").value)||0,
+ analystLow:Number(q("#sAnalystLow").value)||0,
+ thesis:q("#sThesis").value.trim(),
+ catalyst:q("#sCatalyst").value.trim()
+}}
+
+function beginEdit(id){
+ const d=data.find(x=>x.id===id);if(!d)return;
+ editingId=id;
+ q("#stockForm").classList.add("editing");
+ q("#stockFormTitle").textContent="Edit Stock Idea";
+ q("#stockSubmitBtn").textContent="Save Changes";
+ q("#sTicker").value=d.ticker;q("#sCompany").value=d.company;q("#sSector").value=d.sector;q("#sStatus").value=d.status;
+ q("#sSmartScorePrimary").value=d.smartScore||5;q("#sInvestorPrimary").value=d.investorTrend||"Negative";q("#sHedgePrimary").value=d.hedgeFund||"Negative";
+ q("#sPrice").value=d.price||"";q("#sTarget").value=d.target||"";q("#sForecast").value=d.forecast||"Neutral";q("#sInsider").value=d.insider||"Neutral";
+ q("#sNewsTrend").value=d.newsTrend||"Neutral";q("#sTechnicals").value=d.technicals||"Neutral";q("#sMomentum").value=d.momentum||"";q("#sROE").value=d.roe||"";
+ q("#sAssetGrowth").value=d.assetGrowth||"";q("#sAnalystHigh").value=d.analystHigh||"";q("#sAnalystAvg").value=d.analystAvg||"";q("#sAnalystLow").value=d.analystLow||"";
+ q("#sThesis").value=d.thesis;q("#sCatalyst").value=d.catalyst||"";
+ q("#stockMessage").textContent="Editing "+d.ticker+". Save changes to replace this entry.";
+ q("#stockForm").scrollIntoView({behavior:"smooth",block:"start"});
+}
+
+function cancelEdit(){
+ editingId=null;q("#stockForm").reset();q("#stockForm").classList.remove("editing");
+ q("#stockFormTitle").textContent="Add Stock Idea";q("#stockSubmitBtn").textContent="Add to Universe";q("#stockMessage").textContent="";
+}
+
+function deleteStock(id){
+ const idx=data.findIndex(d=>d.id===id);if(idx<0)return;
+ const removed=data[idx];if(!confirm("Delete "+removed.ticker+" from the stock universe?"))return;
+ data.splice(idx,1);if(editingId===id)cancelEdit();syncFilterOptions();render();renderDetail(data[0]||null);q("#stockMessage").textContent=removed.ticker+" deleted from this session.";
+}
+
+[search,sectorFilter,statusFilter,investorFilter].forEach(el=>el.addEventListener("input",render));
+q("#stockReset").addEventListener("click",()=>{search.value="";sectorFilter.value="";statusFilter.value="";investorFilter.value="";render()});
+q("#cancelEditBtn").addEventListener("click",cancelEdit);
+q("#stockForm").addEventListener("reset",()=>setTimeout(()=>{if(!editingId)q("#stockMessage").textContent=""},0));
+q("#stockForm").addEventListener("submit",e=>{
+ e.preventDefault();const values=formValues();
+ if(editingId){
+   const d=data.find(x=>x.id===editingId);Object.assign(d,values);
+   const selected={...d};cancelEdit();syncFilterOptions();render();renderDetail(selected);q("#stockMessage").textContent=selected.ticker+" updated for this session.";
+ }else{
+   const entry={id:"USR-"+Date.now(),...values};data.unshift(entry);syncFilterOptions();q("#stockForm").reset();q("#stockMessage").textContent="Added to your stock universe for this session.";
+   search.value="";sectorFilter.value="";statusFilter.value="";investorFilter.value="";render();renderDetail(entry);
+ }
+});
+syncFilterOptions();render();renderDetail(data[0]);+Number(d.currentValue).toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2}):'—')+'</td>'+
+  '<td style="color:'+(statusColors[d.status]||"#fff")+'">'+esc(d.status)+'</td>'+
+  '<td><div class="action-group"><button type="button" class="mini-btn edit" data-edit="'+d.id+'">Edit</button><button type="button" class="mini-btn delete" data-delete="'+d.id+'">Delete</button></div></td>'+
+  '</tr>').join("");
+ q("#stockTable").querySelectorAll("tr").forEach(r=>r.addEventListener("click",e=>{if(e.target.closest("button"))return;renderDetail(data.find(d=>d.id===r.dataset.id))}));
+ q("#stockTable").querySelectorAll("[data-edit]").forEach(b=>b.addEventListener("click",()=>beginEdit(b.dataset.edit)));
+ q("#stockTable").querySelectorAll("[data-delete]").forEach(b=>b.addEventListener("click",()=>deleteStock(b.dataset.delete)));
+ q("#stockCount").textContent=rows.length+" stocks";
+}
+
+function renderBars(rows){
+ const c={};rows.forEach(d=>c[d.sector]=(c[d.sector]||0)+1);
+ const max=Math.max(1,...Object.values(c));
+ q("#sectorBars").innerHTML=Object.entries(c).sort((a,b)=>b[1]-a[1]).map(([k,v])=>
+  '<div class="bar-row"><div class="bar-label">'+esc(k)+'</div><div class="bar-track"><div class="bar-fill" style="width:'+(v/max*100)+'%;background:'+(sectorColors[k]||"#3B82F6")+'"></div></div><div class="bar-value">'+v+'</div></div>').join("");
+}
+
+function renderDetail(d){
+ if(!d){q("#stockDetailTitle").textContent="Choose a stock";q("#stockDetailContent").innerHTML='<div class="detail-empty">Click a bubble or stock row to inspect your thesis.</div>';return}
+ q("#stockDetailTitle").textContent=d.ticker+" · "+d.company;
+ q("#stockDetailContent").innerHTML=
+ '<div class="detail">'+
+ '<div class="badge-row"><span class="badge" style="color:'+(statusColors[d.status]||"#fff")+'">'+esc(d.status.toUpperCase())+'</span><span class="badge">'+esc(d.sector.toUpperCase())+'</span><span class="badge">'+esc(d.investorTrend.toUpperCase())+'</span></div>'+
+ '<p class="description">'+esc(d.thesis)+'</p>'+
+ '<div class="detail-grid">'+
+ '<div class="metric"><div class="metric-label">Smart Score</div><div class="metric-value">'+d.smartScore+'/10</div></div>'+
+ '<div class="metric"><div class="metric-label">Investor Trend</div><div class="metric-value">'+esc(d.investorTrend)+'</div></div>'+
+ '<div class="metric"><div class="metric-label">Hedge Fund Trend</div><div class="metric-value">'+esc(d.hedgeFund)+'</div></div>'+
+ '<div class="metric"><div class="metric-label">Price</div><div class="metric-value">'+(d.price?'$'+Number(d.price).toFixed(2):'—')+'</div></div>'+
+ '<div class="metric"><div class="metric-label">Target</div><div class="metric-value">'+(d.target?'$'+Number(d.target).toFixed(2):'—')+'</div></div>'+
+ '</div>'+
+ '<div class="research-section"><h3>Research Signals</h3><div class="signal-grid">'+
+ '<div class="signal-card"><div class="signal-label">12M Forecast</div><div class="signal-value">'+esc(d.forecast||"—")+'</div></div>'+
+ '<div class="signal-card"><div class="signal-label">Smart Score</div><div class="signal-value">'+d.smartScore+'/10</div><div class="score-meter"><span class="score-marker" style="left:'+Math.max(0,Math.min(100,((d.smartScore||1)-1)/9*100))+'%"></span></div></div>'+
+ '<div class="signal-card"><div class="signal-label">Hedge Fund Trend</div><div class="signal-value">'+esc(d.hedgeFund||"—")+'</div></div>'+
+ '<div class="signal-card"><div class="signal-label">Insider Trend</div><div class="signal-value">'+esc(d.insider||"—")+'</div></div>'+
+ '<div class="signal-card"><div class="signal-label">Investor Trend</div><div class="signal-value">'+esc(d.investorTrend||"—")+'</div></div>'+
+ '<div class="signal-card"><div class="signal-label">News Trend</div><div class="signal-value">'+esc(d.newsTrend||"—")+'</div></div>'+
+ '<div class="signal-card"><div class="signal-label">Technicals</div><div class="signal-value">'+esc(d.technicals||"—")+'</div></div>'+
+ '<div class="signal-card"><div class="signal-label">12M Momentum</div><div class="signal-value">'+(d.momentum?Number(d.momentum).toFixed(2)+'%':'—')+'</div></div>'+
+ '<div class="signal-card"><div class="signal-label">Return on Equity</div><div class="signal-value">'+(d.roe?Number(d.roe).toFixed(2)+'%':'—')+'</div></div>'+
+ '<div class="signal-card"><div class="signal-label">Asset Growth</div><div class="signal-value">'+(d.assetGrowth?Number(d.assetGrowth).toFixed(2)+'%':'—')+'</div></div>'+
+ '</div></div>'+
+ '<div class="research-section"><h3>Analyst 12-Month Targets</h3><div class="forecast-range">'+
+ '<div class="forecast-item">Low<strong>'+(d.analystLow?'$'+Number(d.analystLow).toFixed(2):'—')+'</strong></div>'+
+ '<div class="forecast-item">Average<strong>'+(d.analystAvg?'$'+Number(d.analystAvg).toFixed(2):'—')+'</strong></div>'+
+ '<div class="forecast-item">High<strong>'+(d.analystHigh?'$'+Number(d.analystHigh).toFixed(2):'—')+'</strong></div>'+
+ '</div></div>'+
+ '<p class="description"><strong>Catalyst / Notes:</strong><br>'+esc(d.catalyst||"—")+'</p>'+
+ '<div class="detail-actions"><button type="button" class="mini-btn edit" id="detailEdit">Edit Stock</button><button type="button" class="mini-btn delete" id="detailDelete">Delete Stock</button></div>'+
+ '</div>';
+ q("#detailEdit").addEventListener("click",()=>beginEdit(d.id));
+ q("#detailDelete").addEventListener("click",()=>deleteStock(d.id));
+}
+
+function render(){const rows=filtered();renderKpis(rows);renderChart(rows);renderTable(rows);renderBars(rows)}
+
+function formValues(){return{
+ ticker:q("#sTicker").value.trim().toUpperCase(),
+ company:q("#sCompany").value.trim(),
+ sector:q("#sSector").value.trim(),
+ status:q("#sStatus").value,
+ smartScore:Number(q("#sSmartScorePrimary").value),
+ investorTrend:q("#sInvestorPrimary").value,
+ hedgeFund:q("#sHedgePrimary").value,
+ price:Number(q("#sPrice").value)||0,
+ target:Number(q("#sTarget").value)||0,
+ forecast:q("#sForecast").value,
+ insider:q("#sInsider").value,
+ newsTrend:q("#sNewsTrend").value,
+ technicals:q("#sTechnicals").value,
+ momentum:Number(q("#sMomentum").value)||0,
+ roe:Number(q("#sROE").value)||0,
+ assetGrowth:Number(q("#sAssetGrowth").value)||0,
+ analystHigh:Number(q("#sAnalystHigh").value)||0,
+ analystAvg:Number(q("#sAnalystAvg").value)||0,
+ analystLow:Number(q("#sAnalystLow").value)||0,
+ thesis:q("#sThesis").value.trim(),
+ catalyst:q("#sCatalyst").value.trim()
+}}
+
+function beginEdit(id){
+ const d=data.find(x=>x.id===id);if(!d)return;
+ editingId=id;
+ q("#stockForm").classList.add("editing");
+ q("#stockFormTitle").textContent="Edit Stock Idea";
+ q("#stockSubmitBtn").textContent="Save Changes";
+ q("#sTicker").value=d.ticker;q("#sCompany").value=d.company;q("#sSector").value=d.sector;q("#sStatus").value=d.status;
+ q("#sSmartScorePrimary").value=d.smartScore||5;q("#sInvestorPrimary").value=d.investorTrend||"Negative";q("#sHedgePrimary").value=d.hedgeFund||"Negative";
+ q("#sPrice").value=d.price||"";q("#sTarget").value=d.target||"";q("#sForecast").value=d.forecast||"Neutral";q("#sInsider").value=d.insider||"Neutral";
+ q("#sNewsTrend").value=d.newsTrend||"Neutral";q("#sTechnicals").value=d.technicals||"Neutral";q("#sMomentum").value=d.momentum||"";q("#sROE").value=d.roe||"";
+ q("#sAssetGrowth").value=d.assetGrowth||"";q("#sAnalystHigh").value=d.analystHigh||"";q("#sAnalystAvg").value=d.analystAvg||"";q("#sAnalystLow").value=d.analystLow||"";
+ q("#sThesis").value=d.thesis;q("#sCatalyst").value=d.catalyst||"";
+ q("#stockMessage").textContent="Editing "+d.ticker+". Save changes to replace this entry.";
+ q("#stockForm").scrollIntoView({behavior:"smooth",block:"start"});
+}
+
+function cancelEdit(){
+ editingId=null;q("#stockForm").reset();q("#stockForm").classList.remove("editing");
+ q("#stockFormTitle").textContent="Add Stock Idea";q("#stockSubmitBtn").textContent="Add to Universe";q("#stockMessage").textContent="";
+}
+
+function deleteStock(id){
+ const idx=data.findIndex(d=>d.id===id);if(idx<0)return;
+ const removed=data[idx];if(!confirm("Delete "+removed.ticker+" from the stock universe?"))return;
+ data.splice(idx,1);if(editingId===id)cancelEdit();syncFilterOptions();render();renderDetail(data[0]||null);q("#stockMessage").textContent=removed.ticker+" deleted from this session.";
+}
+
+[search,sectorFilter,statusFilter,investorFilter].forEach(el=>el.addEventListener("input",render));
+q("#stockReset").addEventListener("click",()=>{search.value="";sectorFilter.value="";statusFilter.value="";investorFilter.value="";render()});
+q("#cancelEditBtn").addEventListener("click",cancelEdit);
+q("#stockForm").addEventListener("reset",()=>setTimeout(()=>{if(!editingId)q("#stockMessage").textContent=""},0));
+q("#stockForm").addEventListener("submit",e=>{
+ e.preventDefault();const values=formValues();
+ if(editingId){
+   const d=data.find(x=>x.id===editingId);Object.assign(d,values);
+   const selected={...d};cancelEdit();syncFilterOptions();render();renderDetail(selected);q("#stockMessage").textContent=selected.ticker+" updated for this session.";
+ }else{
+   const entry={id:"USR-"+Date.now(),...values};data.unshift(entry);syncFilterOptions();q("#stockForm").reset();q("#stockMessage").textContent="Added to your stock universe for this session.";
+   search.value="";sectorFilter.value="";statusFilter.value="";investorFilter.value="";render();renderDetail(entry);
+ }
+});
+syncFilterOptions();render();renderDetail(data[0]);+Number(d.currentValue).toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2}):'—')+'</div></div>'+
+ '</div>'+
+ '<div class="research-section"><h3>Research Signals</h3><div class="signal-grid">'+
+ '<div class="signal-card"><div class="signal-label">12M Forecast</div><div class="signal-value">'+esc(d.forecast||"—")+'</div></div>'+
+ '<div class="signal-card"><div class="signal-label">Smart Score</div><div class="signal-value">'+d.smartScore+'/10</div><div class="score-meter"><span class="score-marker" style="left:'+Math.max(0,Math.min(100,((d.smartScore||1)-1)/9*100))+'%"></span></div></div>'+
+ '<div class="signal-card"><div class="signal-label">Hedge Fund Trend</div><div class="signal-value">'+esc(d.hedgeFund||"—")+'</div></div>'+
+ '<div class="signal-card"><div class="signal-label">Insider Trend</div><div class="signal-value">'+esc(d.insider||"—")+'</div></div>'+
+ '<div class="signal-card"><div class="signal-label">Investor Trend</div><div class="signal-value">'+esc(d.investorTrend||"—")+'</div></div>'+
+ '<div class="signal-card"><div class="signal-label">News Trend</div><div class="signal-value">'+esc(d.newsTrend||"—")+'</div></div>'+
+ '<div class="signal-card"><div class="signal-label">Technicals</div><div class="signal-value">'+esc(d.technicals||"—")+'</div></div>'+
+ '<div class="signal-card"><div class="signal-label">12M Momentum</div><div class="signal-value">'+(d.momentum?Number(d.momentum).toFixed(2)+'%':'—')+'</div></div>'+
+ '<div class="signal-card"><div class="signal-label">Return on Equity</div><div class="signal-value">'+(d.roe?Number(d.roe).toFixed(2)+'%':'—')+'</div></div>'+
+ '<div class="signal-card"><div class="signal-label">Asset Growth</div><div class="signal-value">'+(d.assetGrowth?Number(d.assetGrowth).toFixed(2)+'%':'—')+'</div></div>'+
+ '</div></div>'+
+ '<div class="research-section"><h3>Analyst 12-Month Targets</h3><div class="forecast-range">'+
+ '<div class="forecast-item">Low<strong>'+(d.analystLow?'$'+Number(d.analystLow).toFixed(2):'—')+'</strong></div>'+
+ '<div class="forecast-item">Average<strong>'+(d.analystAvg?'$'+Number(d.analystAvg).toFixed(2):'—')+'</strong></div>'+
+ '<div class="forecast-item">High<strong>'+(d.analystHigh?'$'+Number(d.analystHigh).toFixed(2):'—')+'</strong></div>'+
+ '</div></div>'+
+ '<p class="description"><strong>Catalyst / Notes:</strong><br>'+esc(d.catalyst||"—")+'</p>'+
+ '<div class="detail-actions"><button type="button" class="mini-btn edit" id="detailEdit">Edit Stock</button><button type="button" class="mini-btn delete" id="detailDelete">Delete Stock</button></div>'+
+ '</div>';
+ q("#detailEdit").addEventListener("click",()=>beginEdit(d.id));
+ q("#detailDelete").addEventListener("click",()=>deleteStock(d.id));
+}
+
+function render(){const rows=filtered();renderKpis(rows);renderChart(rows);renderTable(rows);renderBars(rows)}
+
+function formValues(){return{
+ ticker:q("#sTicker").value.trim().toUpperCase(),
+ company:q("#sCompany").value.trim(),
+ sector:q("#sSector").value.trim(),
+ status:q("#sStatus").value,
+ smartScore:Number(q("#sSmartScorePrimary").value),
+ investorTrend:q("#sInvestorPrimary").value,
+ hedgeFund:q("#sHedgePrimary").value,
+ price:Number(q("#sPrice").value)||0,
+ target:Number(q("#sTarget").value)||0,
+ forecast:q("#sForecast").value,
+ insider:q("#sInsider").value,
+ newsTrend:q("#sNewsTrend").value,
+ technicals:q("#sTechnicals").value,
+ momentum:Number(q("#sMomentum").value)||0,
+ roe:Number(q("#sROE").value)||0,
+ assetGrowth:Number(q("#sAssetGrowth").value)||0,
+ analystHigh:Number(q("#sAnalystHigh").value)||0,
+ analystAvg:Number(q("#sAnalystAvg").value)||0,
+ analystLow:Number(q("#sAnalystLow").value)||0,
+ thesis:q("#sThesis").value.trim(),
+ catalyst:q("#sCatalyst").value.trim()
+}}
+
+function beginEdit(id){
+ const d=data.find(x=>x.id===id);if(!d)return;
+ editingId=id;
+ q("#stockForm").classList.add("editing");
+ q("#stockFormTitle").textContent="Edit Stock Idea";
+ q("#stockSubmitBtn").textContent="Save Changes";
+ q("#sTicker").value=d.ticker;q("#sCompany").value=d.company;q("#sSector").value=d.sector;q("#sStatus").value=d.status;
+ q("#sSmartScorePrimary").value=d.smartScore||5;q("#sInvestorPrimary").value=d.investorTrend||"Negative";q("#sHedgePrimary").value=d.hedgeFund||"Negative";
+ q("#sPrice").value=d.price||"";q("#sTarget").value=d.target||"";q("#sForecast").value=d.forecast||"Neutral";q("#sInsider").value=d.insider||"Neutral";
+ q("#sNewsTrend").value=d.newsTrend||"Neutral";q("#sTechnicals").value=d.technicals||"Neutral";q("#sMomentum").value=d.momentum||"";q("#sROE").value=d.roe||"";
+ q("#sAssetGrowth").value=d.assetGrowth||"";q("#sAnalystHigh").value=d.analystHigh||"";q("#sAnalystAvg").value=d.analystAvg||"";q("#sAnalystLow").value=d.analystLow||"";
+ q("#sThesis").value=d.thesis;q("#sCatalyst").value=d.catalyst||"";
+ q("#stockMessage").textContent="Editing "+d.ticker+". Save changes to replace this entry.";
+ q("#stockForm").scrollIntoView({behavior:"smooth",block:"start"});
+}
+
+function cancelEdit(){
+ editingId=null;q("#stockForm").reset();q("#stockForm").classList.remove("editing");
+ q("#stockFormTitle").textContent="Add Stock Idea";q("#stockSubmitBtn").textContent="Add to Universe";q("#stockMessage").textContent="";
+}
+
+function deleteStock(id){
+ const idx=data.findIndex(d=>d.id===id);if(idx<0)return;
+ const removed=data[idx];if(!confirm("Delete "+removed.ticker+" from the stock universe?"))return;
+ data.splice(idx,1);if(editingId===id)cancelEdit();syncFilterOptions();render();renderDetail(data[0]||null);q("#stockMessage").textContent=removed.ticker+" deleted from this session.";
+}
+
+[search,sectorFilter,statusFilter,investorFilter].forEach(el=>el.addEventListener("input",render));
+q("#stockReset").addEventListener("click",()=>{search.value="";sectorFilter.value="";statusFilter.value="";investorFilter.value="";render()});
+q("#cancelEditBtn").addEventListener("click",cancelEdit);
+q("#stockForm").addEventListener("reset",()=>setTimeout(()=>{if(!editingId)q("#stockMessage").textContent=""},0));
+q("#stockForm").addEventListener("submit",e=>{
+ e.preventDefault();const values=formValues();
+ if(editingId){
+   const d=data.find(x=>x.id===editingId);Object.assign(d,values);
+   const selected={...d};cancelEdit();syncFilterOptions();render();renderDetail(selected);q("#stockMessage").textContent=selected.ticker+" updated for this session.";
+ }else{
+   const entry={id:"USR-"+Date.now(),...values};data.unshift(entry);syncFilterOptions();q("#stockForm").reset();q("#stockMessage").textContent="Added to your stock universe for this session.";
+   search.value="";sectorFilter.value="";statusFilter.value="";investorFilter.value="";render();renderDetail(entry);
+ }
+});
+syncFilterOptions();render();renderDetail(data[0]);+Number(d.currentValue).toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2}):'—')+'</td>'+
+  '<td style="color:'+(statusColors[d.status]||"#fff")+'">'+esc(d.status)+'</td>'+
+  '<td><div class="action-group"><button type="button" class="mini-btn edit" data-edit="'+d.id+'">Edit</button><button type="button" class="mini-btn delete" data-delete="'+d.id+'">Delete</button></div></td>'+
+  '</tr>').join("");
+ q("#stockTable").querySelectorAll("tr").forEach(r=>r.addEventListener("click",e=>{if(e.target.closest("button"))return;renderDetail(data.find(d=>d.id===r.dataset.id))}));
+ q("#stockTable").querySelectorAll("[data-edit]").forEach(b=>b.addEventListener("click",()=>beginEdit(b.dataset.edit)));
+ q("#stockTable").querySelectorAll("[data-delete]").forEach(b=>b.addEventListener("click",()=>deleteStock(b.dataset.delete)));
+ q("#stockCount").textContent=rows.length+" stocks";
+}
+
+function renderBars(rows){
+ const c={};rows.forEach(d=>c[d.sector]=(c[d.sector]||0)+1);
+ const max=Math.max(1,...Object.values(c));
+ q("#sectorBars").innerHTML=Object.entries(c).sort((a,b)=>b[1]-a[1]).map(([k,v])=>
+  '<div class="bar-row"><div class="bar-label">'+esc(k)+'</div><div class="bar-track"><div class="bar-fill" style="width:'+(v/max*100)+'%;background:'+(sectorColors[k]||"#3B82F6")+'"></div></div><div class="bar-value">'+v+'</div></div>').join("");
+}
+
+function renderDetail(d){
+ if(!d){q("#stockDetailTitle").textContent="Choose a stock";q("#stockDetailContent").innerHTML='<div class="detail-empty">Click a bubble or stock row to inspect your thesis.</div>';return}
+ q("#stockDetailTitle").textContent=d.ticker+" · "+d.company;
+ q("#stockDetailContent").innerHTML=
+ '<div class="detail">'+
+ '<div class="badge-row"><span class="badge" style="color:'+(statusColors[d.status]||"#fff")+'">'+esc(d.status.toUpperCase())+'</span><span class="badge">'+esc(d.sector.toUpperCase())+'</span><span class="badge">'+esc(d.investorTrend.toUpperCase())+'</span></div>'+
+ '<p class="description">'+esc(d.thesis)+'</p>'+
+ '<div class="detail-grid">'+
+ '<div class="metric"><div class="metric-label">Smart Score</div><div class="metric-value">'+d.smartScore+'/10</div></div>'+
+ '<div class="metric"><div class="metric-label">Investor Trend</div><div class="metric-value">'+esc(d.investorTrend)+'</div></div>'+
+ '<div class="metric"><div class="metric-label">Hedge Fund Trend</div><div class="metric-value">'+esc(d.hedgeFund)+'</div></div>'+
+ '<div class="metric"><div class="metric-label">Price</div><div class="metric-value">'+(d.price?'$'+Number(d.price).toFixed(2):'—')+'</div></div>'+
+ '<div class="metric"><div class="metric-label">Target</div><div class="metric-value">'+(d.target?'$'+Number(d.target).toFixed(2):'—')+'</div></div>'+
+ '</div>'+
+ '<div class="research-section"><h3>Research Signals</h3><div class="signal-grid">'+
+ '<div class="signal-card"><div class="signal-label">12M Forecast</div><div class="signal-value">'+esc(d.forecast||"—")+'</div></div>'+
+ '<div class="signal-card"><div class="signal-label">Smart Score</div><div class="signal-value">'+d.smartScore+'/10</div><div class="score-meter"><span class="score-marker" style="left:'+Math.max(0,Math.min(100,((d.smartScore||1)-1)/9*100))+'%"></span></div></div>'+
+ '<div class="signal-card"><div class="signal-label">Hedge Fund Trend</div><div class="signal-value">'+esc(d.hedgeFund||"—")+'</div></div>'+
+ '<div class="signal-card"><div class="signal-label">Insider Trend</div><div class="signal-value">'+esc(d.insider||"—")+'</div></div>'+
+ '<div class="signal-card"><div class="signal-label">Investor Trend</div><div class="signal-value">'+esc(d.investorTrend||"—")+'</div></div>'+
+ '<div class="signal-card"><div class="signal-label">News Trend</div><div class="signal-value">'+esc(d.newsTrend||"—")+'</div></div>'+
+ '<div class="signal-card"><div class="signal-label">Technicals</div><div class="signal-value">'+esc(d.technicals||"—")+'</div></div>'+
+ '<div class="signal-card"><div class="signal-label">12M Momentum</div><div class="signal-value">'+(d.momentum?Number(d.momentum).toFixed(2)+'%':'—')+'</div></div>'+
+ '<div class="signal-card"><div class="signal-label">Return on Equity</div><div class="signal-value">'+(d.roe?Number(d.roe).toFixed(2)+'%':'—')+'</div></div>'+
+ '<div class="signal-card"><div class="signal-label">Asset Growth</div><div class="signal-value">'+(d.assetGrowth?Number(d.assetGrowth).toFixed(2)+'%':'—')+'</div></div>'+
+ '</div></div>'+
+ '<div class="research-section"><h3>Analyst 12-Month Targets</h3><div class="forecast-range">'+
+ '<div class="forecast-item">Low<strong>'+(d.analystLow?'$'+Number(d.analystLow).toFixed(2):'—')+'</strong></div>'+
+ '<div class="forecast-item">Average<strong>'+(d.analystAvg?'$'+Number(d.analystAvg).toFixed(2):'—')+'</strong></div>'+
+ '<div class="forecast-item">High<strong>'+(d.analystHigh?'$'+Number(d.analystHigh).toFixed(2):'—')+'</strong></div>'+
+ '</div></div>'+
+ '<p class="description"><strong>Catalyst / Notes:</strong><br>'+esc(d.catalyst||"—")+'</p>'+
+ '<div class="detail-actions"><button type="button" class="mini-btn edit" id="detailEdit">Edit Stock</button><button type="button" class="mini-btn delete" id="detailDelete">Delete Stock</button></div>'+
+ '</div>';
+ q("#detailEdit").addEventListener("click",()=>beginEdit(d.id));
+ q("#detailDelete").addEventListener("click",()=>deleteStock(d.id));
+}
+
+function render(){const rows=filtered();renderKpis(rows);renderChart(rows);renderTable(rows);renderBars(rows)}
+
+function formValues(){return{
+ ticker:q("#sTicker").value.trim().toUpperCase(),
+ company:q("#sCompany").value.trim(),
+ sector:q("#sSector").value.trim(),
+ status:q("#sStatus").value,
+ smartScore:Number(q("#sSmartScorePrimary").value),
+ investorTrend:q("#sInvestorPrimary").value,
+ hedgeFund:q("#sHedgePrimary").value,
+ price:Number(q("#sPrice").value)||0,
+ target:Number(q("#sTarget").value)||0,
+ forecast:q("#sForecast").value,
+ insider:q("#sInsider").value,
+ newsTrend:q("#sNewsTrend").value,
+ technicals:q("#sTechnicals").value,
+ momentum:Number(q("#sMomentum").value)||0,
+ roe:Number(q("#sROE").value)||0,
+ assetGrowth:Number(q("#sAssetGrowth").value)||0,
+ analystHigh:Number(q("#sAnalystHigh").value)||0,
+ analystAvg:Number(q("#sAnalystAvg").value)||0,
+ analystLow:Number(q("#sAnalystLow").value)||0,
+ thesis:q("#sThesis").value.trim(),
+ catalyst:q("#sCatalyst").value.trim()
+}}
+
+function beginEdit(id){
+ const d=data.find(x=>x.id===id);if(!d)return;
+ editingId=id;
+ q("#stockForm").classList.add("editing");
+ q("#stockFormTitle").textContent="Edit Stock Idea";
+ q("#stockSubmitBtn").textContent="Save Changes";
+ q("#sTicker").value=d.ticker;q("#sCompany").value=d.company;q("#sSector").value=d.sector;q("#sStatus").value=d.status;
+ q("#sSmartScorePrimary").value=d.smartScore||5;q("#sInvestorPrimary").value=d.investorTrend||"Negative";q("#sHedgePrimary").value=d.hedgeFund||"Negative";
+ q("#sPrice").value=d.price||"";q("#sTarget").value=d.target||"";q("#sForecast").value=d.forecast||"Neutral";q("#sInsider").value=d.insider||"Neutral";
+ q("#sNewsTrend").value=d.newsTrend||"Neutral";q("#sTechnicals").value=d.technicals||"Neutral";q("#sMomentum").value=d.momentum||"";q("#sROE").value=d.roe||"";
+ q("#sAssetGrowth").value=d.assetGrowth||"";q("#sAnalystHigh").value=d.analystHigh||"";q("#sAnalystAvg").value=d.analystAvg||"";q("#sAnalystLow").value=d.analystLow||"";
+ q("#sThesis").value=d.thesis;q("#sCatalyst").value=d.catalyst||"";
+ q("#stockMessage").textContent="Editing "+d.ticker+". Save changes to replace this entry.";
+ q("#stockForm").scrollIntoView({behavior:"smooth",block:"start"});
+}
+
+function cancelEdit(){
+ editingId=null;q("#stockForm").reset();q("#stockForm").classList.remove("editing");
+ q("#stockFormTitle").textContent="Add Stock Idea";q("#stockSubmitBtn").textContent="Add to Universe";q("#stockMessage").textContent="";
+}
+
+function deleteStock(id){
+ const idx=data.findIndex(d=>d.id===id);if(idx<0)return;
+ const removed=data[idx];if(!confirm("Delete "+removed.ticker+" from the stock universe?"))return;
+ data.splice(idx,1);if(editingId===id)cancelEdit();syncFilterOptions();render();renderDetail(data[0]||null);q("#stockMessage").textContent=removed.ticker+" deleted from this session.";
+}
+
+[search,sectorFilter,statusFilter,investorFilter].forEach(el=>el.addEventListener("input",render));
+q("#stockReset").addEventListener("click",()=>{search.value="";sectorFilter.value="";statusFilter.value="";investorFilter.value="";render()});
+q("#cancelEditBtn").addEventListener("click",cancelEdit);
+q("#stockForm").addEventListener("reset",()=>setTimeout(()=>{if(!editingId)q("#stockMessage").textContent=""},0));
+q("#stockForm").addEventListener("submit",e=>{
+ e.preventDefault();const values=formValues();
+ if(editingId){
+   const d=data.find(x=>x.id===editingId);Object.assign(d,values);
+   const selected={...d};cancelEdit();syncFilterOptions();render();renderDetail(selected);q("#stockMessage").textContent=selected.ticker+" updated for this session.";
+ }else{
+   const entry={id:"USR-"+Date.now(),...values};data.unshift(entry);syncFilterOptions();q("#stockForm").reset();q("#stockMessage").textContent="Added to your stock universe for this session.";
+   search.value="";sectorFilter.value="";statusFilter.value="";investorFilter.value="";render();renderDetail(entry);
+ }
+});
+syncFilterOptions();render();renderDetail(data[0]);+Number(d.currentValue).toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2}):'—')+'</div></div>'+
+ '</div></div>'+
+ '<div class="research-section"><h3>Analyst 12-Month Targets</h3><div class="forecast-range">'+
+ '<div class="forecast-item">Low<strong>'+(d.analystLow?'$'+Number(d.analystLow).toFixed(2):'—')+'</strong></div>'+
+ '<div class="forecast-item">Average<strong>'+(d.analystAvg?'$'+Number(d.analystAvg).toFixed(2):'—')+'</strong></div>'+
+ '<div class="forecast-item">High<strong>'+(d.analystHigh?'$'+Number(d.analystHigh).toFixed(2):'—')+'</strong></div>'+
+ '</div></div>'+
+ '<p class="description"><strong>Catalyst / Notes:</strong><br>'+esc(d.catalyst||"—")+'</p>'+
+ '<div class="detail-actions"><button type="button" class="mini-btn edit" id="detailEdit">Edit Stock</button><button type="button" class="mini-btn delete" id="detailDelete">Delete Stock</button></div>'+
+ '</div>';
+ q("#detailEdit").addEventListener("click",()=>beginEdit(d.id));
+ q("#detailDelete").addEventListener("click",()=>deleteStock(d.id));
+}
+
+function render(){const rows=filtered();renderKpis(rows);renderChart(rows);renderTable(rows);renderBars(rows)}
+
+function formValues(){return{
+ ticker:q("#sTicker").value.trim().toUpperCase(),
+ company:q("#sCompany").value.trim(),
+ sector:q("#sSector").value.trim(),
+ status:q("#sStatus").value,
+ smartScore:Number(q("#sSmartScorePrimary").value),
+ investorTrend:q("#sInvestorPrimary").value,
+ hedgeFund:q("#sHedgePrimary").value,
+ price:Number(q("#sPrice").value)||0,
+ target:Number(q("#sTarget").value)||0,
+ forecast:q("#sForecast").value,
+ insider:q("#sInsider").value,
+ newsTrend:q("#sNewsTrend").value,
+ technicals:q("#sTechnicals").value,
+ momentum:Number(q("#sMomentum").value)||0,
+ roe:Number(q("#sROE").value)||0,
+ assetGrowth:Number(q("#sAssetGrowth").value)||0,
+ analystHigh:Number(q("#sAnalystHigh").value)||0,
+ analystAvg:Number(q("#sAnalystAvg").value)||0,
+ analystLow:Number(q("#sAnalystLow").value)||0,
+ thesis:q("#sThesis").value.trim(),
+ catalyst:q("#sCatalyst").value.trim()
+}}
+
+function beginEdit(id){
+ const d=data.find(x=>x.id===id);if(!d)return;
+ editingId=id;
+ q("#stockForm").classList.add("editing");
+ q("#stockFormTitle").textContent="Edit Stock Idea";
+ q("#stockSubmitBtn").textContent="Save Changes";
+ q("#sTicker").value=d.ticker;q("#sCompany").value=d.company;q("#sSector").value=d.sector;q("#sStatus").value=d.status;
+ q("#sSmartScorePrimary").value=d.smartScore||5;q("#sInvestorPrimary").value=d.investorTrend||"Negative";q("#sHedgePrimary").value=d.hedgeFund||"Negative";
+ q("#sPrice").value=d.price||"";q("#sTarget").value=d.target||"";q("#sForecast").value=d.forecast||"Neutral";q("#sInsider").value=d.insider||"Neutral";
+ q("#sNewsTrend").value=d.newsTrend||"Neutral";q("#sTechnicals").value=d.technicals||"Neutral";q("#sMomentum").value=d.momentum||"";q("#sROE").value=d.roe||"";
+ q("#sAssetGrowth").value=d.assetGrowth||"";q("#sAnalystHigh").value=d.analystHigh||"";q("#sAnalystAvg").value=d.analystAvg||"";q("#sAnalystLow").value=d.analystLow||"";
+ q("#sThesis").value=d.thesis;q("#sCatalyst").value=d.catalyst||"";
+ q("#stockMessage").textContent="Editing "+d.ticker+". Save changes to replace this entry.";
+ q("#stockForm").scrollIntoView({behavior:"smooth",block:"start"});
+}
+
+function cancelEdit(){
+ editingId=null;q("#stockForm").reset();q("#stockForm").classList.remove("editing");
+ q("#stockFormTitle").textContent="Add Stock Idea";q("#stockSubmitBtn").textContent="Add to Universe";q("#stockMessage").textContent="";
+}
+
+function deleteStock(id){
+ const idx=data.findIndex(d=>d.id===id);if(idx<0)return;
+ const removed=data[idx];if(!confirm("Delete "+removed.ticker+" from the stock universe?"))return;
+ data.splice(idx,1);if(editingId===id)cancelEdit();syncFilterOptions();render();renderDetail(data[0]||null);q("#stockMessage").textContent=removed.ticker+" deleted from this session.";
+}
+
+[search,sectorFilter,statusFilter,investorFilter].forEach(el=>el.addEventListener("input",render));
+q("#stockReset").addEventListener("click",()=>{search.value="";sectorFilter.value="";statusFilter.value="";investorFilter.value="";render()});
+q("#cancelEditBtn").addEventListener("click",cancelEdit);
+q("#stockForm").addEventListener("reset",()=>setTimeout(()=>{if(!editingId)q("#stockMessage").textContent=""},0));
+q("#stockForm").addEventListener("submit",e=>{
+ e.preventDefault();const values=formValues();
+ if(editingId){
+   const d=data.find(x=>x.id===editingId);Object.assign(d,values);
+   const selected={...d};cancelEdit();syncFilterOptions();render();renderDetail(selected);q("#stockMessage").textContent=selected.ticker+" updated for this session.";
+ }else{
+   const entry={id:"USR-"+Date.now(),...values};data.unshift(entry);syncFilterOptions();q("#stockForm").reset();q("#stockMessage").textContent="Added to your stock universe for this session.";
+   search.value="";sectorFilter.value="";statusFilter.value="";investorFilter.value="";render();renderDetail(entry);
+ }
+});
+syncFilterOptions();render();renderDetail(data[0]);+Number(d.currentValue).toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2}):'—')+'</td>'+
+  '<td style="color:'+(statusColors[d.status]||"#fff")+'">'+esc(d.status)+'</td>'+
+  '<td><div class="action-group"><button type="button" class="mini-btn edit" data-edit="'+d.id+'">Edit</button><button type="button" class="mini-btn delete" data-delete="'+d.id+'">Delete</button></div></td>'+
+  '</tr>').join("");
+ q("#stockTable").querySelectorAll("tr").forEach(r=>r.addEventListener("click",e=>{if(e.target.closest("button"))return;renderDetail(data.find(d=>d.id===r.dataset.id))}));
+ q("#stockTable").querySelectorAll("[data-edit]").forEach(b=>b.addEventListener("click",()=>beginEdit(b.dataset.edit)));
+ q("#stockTable").querySelectorAll("[data-delete]").forEach(b=>b.addEventListener("click",()=>deleteStock(b.dataset.delete)));
+ q("#stockCount").textContent=rows.length+" stocks";
+}
+
+function renderBars(rows){
+ const c={};rows.forEach(d=>c[d.sector]=(c[d.sector]||0)+1);
+ const max=Math.max(1,...Object.values(c));
+ q("#sectorBars").innerHTML=Object.entries(c).sort((a,b)=>b[1]-a[1]).map(([k,v])=>
+  '<div class="bar-row"><div class="bar-label">'+esc(k)+'</div><div class="bar-track"><div class="bar-fill" style="width:'+(v/max*100)+'%;background:'+(sectorColors[k]||"#3B82F6")+'"></div></div><div class="bar-value">'+v+'</div></div>').join("");
+}
+
+function renderDetail(d){
+ if(!d){q("#stockDetailTitle").textContent="Choose a stock";q("#stockDetailContent").innerHTML='<div class="detail-empty">Click a bubble or stock row to inspect your thesis.</div>';return}
+ q("#stockDetailTitle").textContent=d.ticker+" · "+d.company;
+ q("#stockDetailContent").innerHTML=
+ '<div class="detail">'+
+ '<div class="badge-row"><span class="badge" style="color:'+(statusColors[d.status]||"#fff")+'">'+esc(d.status.toUpperCase())+'</span><span class="badge">'+esc(d.sector.toUpperCase())+'</span><span class="badge">'+esc(d.investorTrend.toUpperCase())+'</span></div>'+
+ '<p class="description">'+esc(d.thesis)+'</p>'+
+ '<div class="detail-grid">'+
+ '<div class="metric"><div class="metric-label">Smart Score</div><div class="metric-value">'+d.smartScore+'/10</div></div>'+
+ '<div class="metric"><div class="metric-label">Investor Trend</div><div class="metric-value">'+esc(d.investorTrend)+'</div></div>'+
+ '<div class="metric"><div class="metric-label">Hedge Fund Trend</div><div class="metric-value">'+esc(d.hedgeFund)+'</div></div>'+
+ '<div class="metric"><div class="metric-label">Price</div><div class="metric-value">'+(d.price?'$'+Number(d.price).toFixed(2):'—')+'</div></div>'+
+ '<div class="metric"><div class="metric-label">Target</div><div class="metric-value">'+(d.target?'$'+Number(d.target).toFixed(2):'—')+'</div></div>'+
+ '</div>'+
+ '<div class="research-section"><h3>Research Signals</h3><div class="signal-grid">'+
+ '<div class="signal-card"><div class="signal-label">12M Forecast</div><div class="signal-value">'+esc(d.forecast||"—")+'</div></div>'+
+ '<div class="signal-card"><div class="signal-label">Smart Score</div><div class="signal-value">'+d.smartScore+'/10</div><div class="score-meter"><span class="score-marker" style="left:'+Math.max(0,Math.min(100,((d.smartScore||1)-1)/9*100))+'%"></span></div></div>'+
+ '<div class="signal-card"><div class="signal-label">Hedge Fund Trend</div><div class="signal-value">'+esc(d.hedgeFund||"—")+'</div></div>'+
+ '<div class="signal-card"><div class="signal-label">Insider Trend</div><div class="signal-value">'+esc(d.insider||"—")+'</div></div>'+
+ '<div class="signal-card"><div class="signal-label">Investor Trend</div><div class="signal-value">'+esc(d.investorTrend||"—")+'</div></div>'+
+ '<div class="signal-card"><div class="signal-label">News Trend</div><div class="signal-value">'+esc(d.newsTrend||"—")+'</div></div>'+
+ '<div class="signal-card"><div class="signal-label">Technicals</div><div class="signal-value">'+esc(d.technicals||"—")+'</div></div>'+
+ '<div class="signal-card"><div class="signal-label">12M Momentum</div><div class="signal-value">'+(d.momentum?Number(d.momentum).toFixed(2)+'%':'—')+'</div></div>'+
+ '<div class="signal-card"><div class="signal-label">Return on Equity</div><div class="signal-value">'+(d.roe?Number(d.roe).toFixed(2)+'%':'—')+'</div></div>'+
+ '<div class="signal-card"><div class="signal-label">Asset Growth</div><div class="signal-value">'+(d.assetGrowth?Number(d.assetGrowth).toFixed(2)+'%':'—')+'</div></div>'+
+ '</div></div>'+
+ '<div class="research-section"><h3>Analyst 12-Month Targets</h3><div class="forecast-range">'+
+ '<div class="forecast-item">Low<strong>'+(d.analystLow?'$'+Number(d.analystLow).toFixed(2):'—')+'</strong></div>'+
+ '<div class="forecast-item">Average<strong>'+(d.analystAvg?'$'+Number(d.analystAvg).toFixed(2):'—')+'</strong></div>'+
+ '<div class="forecast-item">High<strong>'+(d.analystHigh?'$'+Number(d.analystHigh).toFixed(2):'—')+'</strong></div>'+
+ '</div></div>'+
+ '<p class="description"><strong>Catalyst / Notes:</strong><br>'+esc(d.catalyst||"—")+'</p>'+
+ '<div class="detail-actions"><button type="button" class="mini-btn edit" id="detailEdit">Edit Stock</button><button type="button" class="mini-btn delete" id="detailDelete">Delete Stock</button></div>'+
+ '</div>';
+ q("#detailEdit").addEventListener("click",()=>beginEdit(d.id));
+ q("#detailDelete").addEventListener("click",()=>deleteStock(d.id));
+}
+
+function render(){const rows=filtered();renderKpis(rows);renderChart(rows);renderTable(rows);renderBars(rows)}
+
+function formValues(){return{
+ ticker:q("#sTicker").value.trim().toUpperCase(),
+ company:q("#sCompany").value.trim(),
+ sector:q("#sSector").value.trim(),
+ status:q("#sStatus").value,
+ smartScore:Number(q("#sSmartScorePrimary").value),
+ investorTrend:q("#sInvestorPrimary").value,
+ hedgeFund:q("#sHedgePrimary").value,
+ price:Number(q("#sPrice").value)||0,
+ target:Number(q("#sTarget").value)||0,
+ forecast:q("#sForecast").value,
+ insider:q("#sInsider").value,
+ newsTrend:q("#sNewsTrend").value,
+ technicals:q("#sTechnicals").value,
+ momentum:Number(q("#sMomentum").value)||0,
+ roe:Number(q("#sROE").value)||0,
+ assetGrowth:Number(q("#sAssetGrowth").value)||0,
+ analystHigh:Number(q("#sAnalystHigh").value)||0,
+ analystAvg:Number(q("#sAnalystAvg").value)||0,
+ analystLow:Number(q("#sAnalystLow").value)||0,
+ thesis:q("#sThesis").value.trim(),
+ catalyst:q("#sCatalyst").value.trim()
+}}
+
+function beginEdit(id){
+ const d=data.find(x=>x.id===id);if(!d)return;
+ editingId=id;
+ q("#stockForm").classList.add("editing");
+ q("#stockFormTitle").textContent="Edit Stock Idea";
+ q("#stockSubmitBtn").textContent="Save Changes";
+ q("#sTicker").value=d.ticker;q("#sCompany").value=d.company;q("#sSector").value=d.sector;q("#sStatus").value=d.status;
+ q("#sSmartScorePrimary").value=d.smartScore||5;q("#sInvestorPrimary").value=d.investorTrend||"Negative";q("#sHedgePrimary").value=d.hedgeFund||"Negative";
+ q("#sPrice").value=d.price||"";q("#sTarget").value=d.target||"";q("#sForecast").value=d.forecast||"Neutral";q("#sInsider").value=d.insider||"Neutral";
+ q("#sNewsTrend").value=d.newsTrend||"Neutral";q("#sTechnicals").value=d.technicals||"Neutral";q("#sMomentum").value=d.momentum||"";q("#sROE").value=d.roe||"";
+ q("#sAssetGrowth").value=d.assetGrowth||"";q("#sAnalystHigh").value=d.analystHigh||"";q("#sAnalystAvg").value=d.analystAvg||"";q("#sAnalystLow").value=d.analystLow||"";
+ q("#sThesis").value=d.thesis;q("#sCatalyst").value=d.catalyst||"";
+ q("#stockMessage").textContent="Editing "+d.ticker+". Save changes to replace this entry.";
+ q("#stockForm").scrollIntoView({behavior:"smooth",block:"start"});
+}
+
+function cancelEdit(){
+ editingId=null;q("#stockForm").reset();q("#stockForm").classList.remove("editing");
+ q("#stockFormTitle").textContent="Add Stock Idea";q("#stockSubmitBtn").textContent="Add to Universe";q("#stockMessage").textContent="";
+}
+
+function deleteStock(id){
+ const idx=data.findIndex(d=>d.id===id);if(idx<0)return;
+ const removed=data[idx];if(!confirm("Delete "+removed.ticker+" from the stock universe?"))return;
+ data.splice(idx,1);if(editingId===id)cancelEdit();syncFilterOptions();render();renderDetail(data[0]||null);q("#stockMessage").textContent=removed.ticker+" deleted from this session.";
+}
+
+[search,sectorFilter,statusFilter,investorFilter].forEach(el=>el.addEventListener("input",render));
+q("#stockReset").addEventListener("click",()=>{search.value="";sectorFilter.value="";statusFilter.value="";investorFilter.value="";render()});
+q("#cancelEditBtn").addEventListener("click",cancelEdit);
+q("#stockForm").addEventListener("reset",()=>setTimeout(()=>{if(!editingId)q("#stockMessage").textContent=""},0));
+q("#stockForm").addEventListener("submit",e=>{
+ e.preventDefault();const values=formValues();
+ if(editingId){
+   const d=data.find(x=>x.id===editingId);Object.assign(d,values);
+   const selected={...d};cancelEdit();syncFilterOptions();render();renderDetail(selected);q("#stockMessage").textContent=selected.ticker+" updated for this session.";
+ }else{
+   const entry={id:"USR-"+Date.now(),...values};data.unshift(entry);syncFilterOptions();q("#stockForm").reset();q("#stockMessage").textContent="Added to your stock universe for this session.";
+   search.value="";sectorFilter.value="";statusFilter.value="";investorFilter.value="";render();renderDetail(entry);
+ }
+});
+syncFilterOptions();render();renderDetail(data[0]);+Number(d.price).toFixed(2):'—')+'</div></div>'+
+ '<div class="metric"><div class="metric-label">Shares Owned</div><div class="metric-value">'+(d.sharesOwned?Number(d.sharesOwned).toLocaleString(undefined,{maximumFractionDigits:4}):'—')+'</div></div>'+
+ '<div class="metric"><div class="metric-label">Current Value</div><div class="metric-value">'+(d.currentValue?'
+ '</div>'+
+ '<div class="research-section"><h3>Research Signals</h3><div class="signal-grid">'+
+ '<div class="signal-card"><div class="signal-label">12M Forecast</div><div class="signal-value">'+esc(d.forecast||"—")+'</div></div>'+
+ '<div class="signal-card"><div class="signal-label">Smart Score</div><div class="signal-value">'+d.smartScore+'/10</div><div class="score-meter"><span class="score-marker" style="left:'+Math.max(0,Math.min(100,((d.smartScore||1)-1)/9*100))+'%"></span></div></div>'+
+ '<div class="signal-card"><div class="signal-label">Hedge Fund Trend</div><div class="signal-value">'+esc(d.hedgeFund||"—")+'</div></div>'+
+ '<div class="signal-card"><div class="signal-label">Insider Trend</div><div class="signal-value">'+esc(d.insider||"—")+'</div></div>'+
+ '<div class="signal-card"><div class="signal-label">Investor Trend</div><div class="signal-value">'+esc(d.investorTrend||"—")+'</div></div>'+
+ '<div class="signal-card"><div class="signal-label">News Trend</div><div class="signal-value">'+esc(d.newsTrend||"—")+'</div></div>'+
+ '<div class="signal-card"><div class="signal-label">Technicals</div><div class="signal-value">'+esc(d.technicals||"—")+'</div></div>'+
+ '<div class="signal-card"><div class="signal-label">12M Momentum</div><div class="signal-value">'+(d.momentum?Number(d.momentum).toFixed(2)+'%':'—')+'</div></div>'+
+ '<div class="signal-card"><div class="signal-label">Return on Equity</div><div class="signal-value">'+(d.roe?Number(d.roe).toFixed(2)+'%':'—')+'</div></div>'+
+ '<div class="signal-card"><div class="signal-label">Asset Growth</div><div class="signal-value">'+(d.assetGrowth?Number(d.assetGrowth).toFixed(2)+'%':'—')+'</div></div>'+
+ '</div></div>'+
+ '<div class="research-section"><h3>Analyst 12-Month Targets</h3><div class="forecast-range">'+
+ '<div class="forecast-item">Low<strong>'+(d.analystLow?'$'+Number(d.analystLow).toFixed(2):'—')+'</strong></div>'+
+ '<div class="forecast-item">Average<strong>'+(d.analystAvg?'$'+Number(d.analystAvg).toFixed(2):'—')+'</strong></div>'+
+ '<div class="forecast-item">High<strong>'+(d.analystHigh?'$'+Number(d.analystHigh).toFixed(2):'—')+'</strong></div>'+
+ '</div></div>'+
+ '<p class="description"><strong>Catalyst / Notes:</strong><br>'+esc(d.catalyst||"—")+'</p>'+
+ '<div class="detail-actions"><button type="button" class="mini-btn edit" id="detailEdit">Edit Stock</button><button type="button" class="mini-btn delete" id="detailDelete">Delete Stock</button></div>'+
+ '</div>';
+ q("#detailEdit").addEventListener("click",()=>beginEdit(d.id));
+ q("#detailDelete").addEventListener("click",()=>deleteStock(d.id));
+}
+
+function render(){const rows=filtered();renderKpis(rows);renderChart(rows);renderTable(rows);renderBars(rows)}
+
+function formValues(){return{
+ ticker:q("#sTicker").value.trim().toUpperCase(),
+ company:q("#sCompany").value.trim(),
+ sector:q("#sSector").value.trim(),
+ status:q("#sStatus").value,
+ smartScore:Number(q("#sSmartScorePrimary").value),
+ investorTrend:q("#sInvestorPrimary").value,
+ hedgeFund:q("#sHedgePrimary").value,
+ price:Number(q("#sPrice").value)||0,
+ target:Number(q("#sTarget").value)||0,
+ forecast:q("#sForecast").value,
+ insider:q("#sInsider").value,
+ newsTrend:q("#sNewsTrend").value,
+ technicals:q("#sTechnicals").value,
+ momentum:Number(q("#sMomentum").value)||0,
+ roe:Number(q("#sROE").value)||0,
+ assetGrowth:Number(q("#sAssetGrowth").value)||0,
+ analystHigh:Number(q("#sAnalystHigh").value)||0,
+ analystAvg:Number(q("#sAnalystAvg").value)||0,
+ analystLow:Number(q("#sAnalystLow").value)||0,
+ thesis:q("#sThesis").value.trim(),
+ catalyst:q("#sCatalyst").value.trim()
+}}
+
+function beginEdit(id){
+ const d=data.find(x=>x.id===id);if(!d)return;
+ editingId=id;
+ q("#stockForm").classList.add("editing");
+ q("#stockFormTitle").textContent="Edit Stock Idea";
+ q("#stockSubmitBtn").textContent="Save Changes";
+ q("#sTicker").value=d.ticker;q("#sCompany").value=d.company;q("#sSector").value=d.sector;q("#sStatus").value=d.status;
+ q("#sSmartScorePrimary").value=d.smartScore||5;q("#sInvestorPrimary").value=d.investorTrend||"Negative";q("#sHedgePrimary").value=d.hedgeFund||"Negative";
+ q("#sPrice").value=d.price||"";q("#sTarget").value=d.target||"";q("#sForecast").value=d.forecast||"Neutral";q("#sInsider").value=d.insider||"Neutral";
+ q("#sNewsTrend").value=d.newsTrend||"Neutral";q("#sTechnicals").value=d.technicals||"Neutral";q("#sMomentum").value=d.momentum||"";q("#sROE").value=d.roe||"";
+ q("#sAssetGrowth").value=d.assetGrowth||"";q("#sAnalystHigh").value=d.analystHigh||"";q("#sAnalystAvg").value=d.analystAvg||"";q("#sAnalystLow").value=d.analystLow||"";
+ q("#sThesis").value=d.thesis;q("#sCatalyst").value=d.catalyst||"";
+ q("#stockMessage").textContent="Editing "+d.ticker+". Save changes to replace this entry.";
+ q("#stockForm").scrollIntoView({behavior:"smooth",block:"start"});
+}
+
+function cancelEdit(){
+ editingId=null;q("#stockForm").reset();q("#stockForm").classList.remove("editing");
+ q("#stockFormTitle").textContent="Add Stock Idea";q("#stockSubmitBtn").textContent="Add to Universe";q("#stockMessage").textContent="";
+}
+
+function deleteStock(id){
+ const idx=data.findIndex(d=>d.id===id);if(idx<0)return;
+ const removed=data[idx];if(!confirm("Delete "+removed.ticker+" from the stock universe?"))return;
+ data.splice(idx,1);if(editingId===id)cancelEdit();syncFilterOptions();render();renderDetail(data[0]||null);q("#stockMessage").textContent=removed.ticker+" deleted from this session.";
+}
+
+[search,sectorFilter,statusFilter,investorFilter].forEach(el=>el.addEventListener("input",render));
+q("#stockReset").addEventListener("click",()=>{search.value="";sectorFilter.value="";statusFilter.value="";investorFilter.value="";render()});
+q("#cancelEditBtn").addEventListener("click",cancelEdit);
+q("#stockForm").addEventListener("reset",()=>setTimeout(()=>{if(!editingId)q("#stockMessage").textContent=""},0));
+q("#stockForm").addEventListener("submit",e=>{
+ e.preventDefault();const values=formValues();
+ if(editingId){
+   const d=data.find(x=>x.id===editingId);Object.assign(d,values);
+   const selected={...d};cancelEdit();syncFilterOptions();render();renderDetail(selected);q("#stockMessage").textContent=selected.ticker+" updated for this session.";
+ }else{
+   const entry={id:"USR-"+Date.now(),...values};data.unshift(entry);syncFilterOptions();q("#stockForm").reset();q("#stockMessage").textContent="Added to your stock universe for this session.";
+   search.value="";sectorFilter.value="";statusFilter.value="";investorFilter.value="";render();renderDetail(entry);
+ }
+});
+syncFilterOptions();render();renderDetail(data[0]);+Number(d.currentValue).toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2}):'—')+'</td>'+
+  '<td style="color:'+(statusColors[d.status]||"#fff")+'">'+esc(d.status)+'</td>'+
+  '<td><div class="action-group"><button type="button" class="mini-btn edit" data-edit="'+d.id+'">Edit</button><button type="button" class="mini-btn delete" data-delete="'+d.id+'">Delete</button></div></td>'+
+  '</tr>').join("");
+ q("#stockTable").querySelectorAll("tr").forEach(r=>r.addEventListener("click",e=>{if(e.target.closest("button"))return;renderDetail(data.find(d=>d.id===r.dataset.id))}));
+ q("#stockTable").querySelectorAll("[data-edit]").forEach(b=>b.addEventListener("click",()=>beginEdit(b.dataset.edit)));
+ q("#stockTable").querySelectorAll("[data-delete]").forEach(b=>b.addEventListener("click",()=>deleteStock(b.dataset.delete)));
+ q("#stockCount").textContent=rows.length+" stocks";
+}
+
+function renderBars(rows){
+ const c={};rows.forEach(d=>c[d.sector]=(c[d.sector]||0)+1);
+ const max=Math.max(1,...Object.values(c));
+ q("#sectorBars").innerHTML=Object.entries(c).sort((a,b)=>b[1]-a[1]).map(([k,v])=>
+  '<div class="bar-row"><div class="bar-label">'+esc(k)+'</div><div class="bar-track"><div class="bar-fill" style="width:'+(v/max*100)+'%;background:'+(sectorColors[k]||"#3B82F6")+'"></div></div><div class="bar-value">'+v+'</div></div>').join("");
+}
+
+function renderDetail(d){
+ if(!d){q("#stockDetailTitle").textContent="Choose a stock";q("#stockDetailContent").innerHTML='<div class="detail-empty">Click a bubble or stock row to inspect your thesis.</div>';return}
+ q("#stockDetailTitle").textContent=d.ticker+" · "+d.company;
+ q("#stockDetailContent").innerHTML=
+ '<div class="detail">'+
+ '<div class="badge-row"><span class="badge" style="color:'+(statusColors[d.status]||"#fff")+'">'+esc(d.status.toUpperCase())+'</span><span class="badge">'+esc(d.sector.toUpperCase())+'</span><span class="badge">'+esc(d.investorTrend.toUpperCase())+'</span></div>'+
+ '<p class="description">'+esc(d.thesis)+'</p>'+
+ '<div class="detail-grid">'+
+ '<div class="metric"><div class="metric-label">Smart Score</div><div class="metric-value">'+d.smartScore+'/10</div></div>'+
+ '<div class="metric"><div class="metric-label">Investor Trend</div><div class="metric-value">'+esc(d.investorTrend)+'</div></div>'+
+ '<div class="metric"><div class="metric-label">Hedge Fund Trend</div><div class="metric-value">'+esc(d.hedgeFund)+'</div></div>'+
+ '<div class="metric"><div class="metric-label">Price</div><div class="metric-value">'+(d.price?'$'+Number(d.price).toFixed(2):'—')+'</div></div>'+
+ '<div class="metric"><div class="metric-label">Target</div><div class="metric-value">'+(d.target?'$'+Number(d.target).toFixed(2):'—')+'</div></div>'+
+ '</div>'+
+ '<div class="research-section"><h3>Research Signals</h3><div class="signal-grid">'+
+ '<div class="signal-card"><div class="signal-label">12M Forecast</div><div class="signal-value">'+esc(d.forecast||"—")+'</div></div>'+
+ '<div class="signal-card"><div class="signal-label">Smart Score</div><div class="signal-value">'+d.smartScore+'/10</div><div class="score-meter"><span class="score-marker" style="left:'+Math.max(0,Math.min(100,((d.smartScore||1)-1)/9*100))+'%"></span></div></div>'+
+ '<div class="signal-card"><div class="signal-label">Hedge Fund Trend</div><div class="signal-value">'+esc(d.hedgeFund||"—")+'</div></div>'+
+ '<div class="signal-card"><div class="signal-label">Insider Trend</div><div class="signal-value">'+esc(d.insider||"—")+'</div></div>'+
+ '<div class="signal-card"><div class="signal-label">Investor Trend</div><div class="signal-value">'+esc(d.investorTrend||"—")+'</div></div>'+
+ '<div class="signal-card"><div class="signal-label">News Trend</div><div class="signal-value">'+esc(d.newsTrend||"—")+'</div></div>'+
+ '<div class="signal-card"><div class="signal-label">Technicals</div><div class="signal-value">'+esc(d.technicals||"—")+'</div></div>'+
+ '<div class="signal-card"><div class="signal-label">12M Momentum</div><div class="signal-value">'+(d.momentum?Number(d.momentum).toFixed(2)+'%':'—')+'</div></div>'+
+ '<div class="signal-card"><div class="signal-label">Return on Equity</div><div class="signal-value">'+(d.roe?Number(d.roe).toFixed(2)+'%':'—')+'</div></div>'+
+ '<div class="signal-card"><div class="signal-label">Asset Growth</div><div class="signal-value">'+(d.assetGrowth?Number(d.assetGrowth).toFixed(2)+'%':'—')+'</div></div>'+
+ '</div></div>'+
+ '<div class="research-section"><h3>Analyst 12-Month Targets</h3><div class="forecast-range">'+
+ '<div class="forecast-item">Low<strong>'+(d.analystLow?'$'+Number(d.analystLow).toFixed(2):'—')+'</strong></div>'+
+ '<div class="forecast-item">Average<strong>'+(d.analystAvg?'$'+Number(d.analystAvg).toFixed(2):'—')+'</strong></div>'+
+ '<div class="forecast-item">High<strong>'+(d.analystHigh?'$'+Number(d.analystHigh).toFixed(2):'—')+'</strong></div>'+
+ '</div></div>'+
+ '<p class="description"><strong>Catalyst / Notes:</strong><br>'+esc(d.catalyst||"—")+'</p>'+
+ '<div class="detail-actions"><button type="button" class="mini-btn edit" id="detailEdit">Edit Stock</button><button type="button" class="mini-btn delete" id="detailDelete">Delete Stock</button></div>'+
+ '</div>';
+ q("#detailEdit").addEventListener("click",()=>beginEdit(d.id));
+ q("#detailDelete").addEventListener("click",()=>deleteStock(d.id));
+}
+
+function render(){const rows=filtered();renderKpis(rows);renderChart(rows);renderTable(rows);renderBars(rows)}
+
+function formValues(){return{
+ ticker:q("#sTicker").value.trim().toUpperCase(),
+ company:q("#sCompany").value.trim(),
+ sector:q("#sSector").value.trim(),
+ status:q("#sStatus").value,
+ smartScore:Number(q("#sSmartScorePrimary").value),
+ investorTrend:q("#sInvestorPrimary").value,
+ hedgeFund:q("#sHedgePrimary").value,
+ price:Number(q("#sPrice").value)||0,
+ target:Number(q("#sTarget").value)||0,
+ forecast:q("#sForecast").value,
+ insider:q("#sInsider").value,
+ newsTrend:q("#sNewsTrend").value,
+ technicals:q("#sTechnicals").value,
+ momentum:Number(q("#sMomentum").value)||0,
+ roe:Number(q("#sROE").value)||0,
+ assetGrowth:Number(q("#sAssetGrowth").value)||0,
+ analystHigh:Number(q("#sAnalystHigh").value)||0,
+ analystAvg:Number(q("#sAnalystAvg").value)||0,
+ analystLow:Number(q("#sAnalystLow").value)||0,
+ thesis:q("#sThesis").value.trim(),
+ catalyst:q("#sCatalyst").value.trim()
+}}
+
+function beginEdit(id){
+ const d=data.find(x=>x.id===id);if(!d)return;
+ editingId=id;
+ q("#stockForm").classList.add("editing");
+ q("#stockFormTitle").textContent="Edit Stock Idea";
+ q("#stockSubmitBtn").textContent="Save Changes";
+ q("#sTicker").value=d.ticker;q("#sCompany").value=d.company;q("#sSector").value=d.sector;q("#sStatus").value=d.status;
+ q("#sSmartScorePrimary").value=d.smartScore||5;q("#sInvestorPrimary").value=d.investorTrend||"Negative";q("#sHedgePrimary").value=d.hedgeFund||"Negative";
+ q("#sPrice").value=d.price||"";q("#sTarget").value=d.target||"";q("#sForecast").value=d.forecast||"Neutral";q("#sInsider").value=d.insider||"Neutral";
+ q("#sNewsTrend").value=d.newsTrend||"Neutral";q("#sTechnicals").value=d.technicals||"Neutral";q("#sMomentum").value=d.momentum||"";q("#sROE").value=d.roe||"";
+ q("#sAssetGrowth").value=d.assetGrowth||"";q("#sAnalystHigh").value=d.analystHigh||"";q("#sAnalystAvg").value=d.analystAvg||"";q("#sAnalystLow").value=d.analystLow||"";
+ q("#sThesis").value=d.thesis;q("#sCatalyst").value=d.catalyst||"";
+ q("#stockMessage").textContent="Editing "+d.ticker+". Save changes to replace this entry.";
+ q("#stockForm").scrollIntoView({behavior:"smooth",block:"start"});
+}
+
+function cancelEdit(){
+ editingId=null;q("#stockForm").reset();q("#stockForm").classList.remove("editing");
+ q("#stockFormTitle").textContent="Add Stock Idea";q("#stockSubmitBtn").textContent="Add to Universe";q("#stockMessage").textContent="";
+}
+
+function deleteStock(id){
+ const idx=data.findIndex(d=>d.id===id);if(idx<0)return;
+ const removed=data[idx];if(!confirm("Delete "+removed.ticker+" from the stock universe?"))return;
+ data.splice(idx,1);if(editingId===id)cancelEdit();syncFilterOptions();render();renderDetail(data[0]||null);q("#stockMessage").textContent=removed.ticker+" deleted from this session.";
+}
+
+[search,sectorFilter,statusFilter,investorFilter].forEach(el=>el.addEventListener("input",render));
+q("#stockReset").addEventListener("click",()=>{search.value="";sectorFilter.value="";statusFilter.value="";investorFilter.value="";render()});
+q("#cancelEditBtn").addEventListener("click",cancelEdit);
+q("#stockForm").addEventListener("reset",()=>setTimeout(()=>{if(!editingId)q("#stockMessage").textContent=""},0));
+q("#stockForm").addEventListener("submit",e=>{
+ e.preventDefault();const values=formValues();
+ if(editingId){
+   const d=data.find(x=>x.id===editingId);Object.assign(d,values);
+   const selected={...d};cancelEdit();syncFilterOptions();render();renderDetail(selected);q("#stockMessage").textContent=selected.ticker+" updated for this session.";
+ }else{
+   const entry={id:"USR-"+Date.now(),...values};data.unshift(entry);syncFilterOptions();q("#stockForm").reset();q("#stockMessage").textContent="Added to your stock universe for this session.";
+   search.value="";sectorFilter.value="";statusFilter.value="";investorFilter.value="";render();renderDetail(entry);
+ }
+});
+syncFilterOptions();render();renderDetail(data[0]);+Number(d.currentValue).toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2}):'—')+'</div></div>'+
+ '</div>'+
+ '<div class="research-section"><h3>Research Signals</h3><div class="signal-grid">'+
+ '<div class="signal-card"><div class="signal-label">12M Forecast</div><div class="signal-value">'+esc(d.forecast||"—")+'</div></div>'+
+ '<div class="signal-card"><div class="signal-label">Smart Score</div><div class="signal-value">'+d.smartScore+'/10</div><div class="score-meter"><span class="score-marker" style="left:'+Math.max(0,Math.min(100,((d.smartScore||1)-1)/9*100))+'%"></span></div></div>'+
+ '<div class="signal-card"><div class="signal-label">Hedge Fund Trend</div><div class="signal-value">'+esc(d.hedgeFund||"—")+'</div></div>'+
+ '<div class="signal-card"><div class="signal-label">Insider Trend</div><div class="signal-value">'+esc(d.insider||"—")+'</div></div>'+
+ '<div class="signal-card"><div class="signal-label">Investor Trend</div><div class="signal-value">'+esc(d.investorTrend||"—")+'</div></div>'+
+ '<div class="signal-card"><div class="signal-label">News Trend</div><div class="signal-value">'+esc(d.newsTrend||"—")+'</div></div>'+
+ '<div class="signal-card"><div class="signal-label">Technicals</div><div class="signal-value">'+esc(d.technicals||"—")+'</div></div>'+
+ '<div class="signal-card"><div class="signal-label">12M Momentum</div><div class="signal-value">'+(d.momentum?Number(d.momentum).toFixed(2)+'%':'—')+'</div></div>'+
+ '<div class="signal-card"><div class="signal-label">Return on Equity</div><div class="signal-value">'+(d.roe?Number(d.roe).toFixed(2)+'%':'—')+'</div></div>'+
+ '<div class="signal-card"><div class="signal-label">Asset Growth</div><div class="signal-value">'+(d.assetGrowth?Number(d.assetGrowth).toFixed(2)+'%':'—')+'</div></div>'+
+ '</div></div>'+
+ '<div class="research-section"><h3>Analyst 12-Month Targets</h3><div class="forecast-range">'+
+ '<div class="forecast-item">Low<strong>'+(d.analystLow?'$'+Number(d.analystLow).toFixed(2):'—')+'</strong></div>'+
+ '<div class="forecast-item">Average<strong>'+(d.analystAvg?'$'+Number(d.analystAvg).toFixed(2):'—')+'</strong></div>'+
+ '<div class="forecast-item">High<strong>'+(d.analystHigh?'$'+Number(d.analystHigh).toFixed(2):'—')+'</strong></div>'+
+ '</div></div>'+
+ '<p class="description"><strong>Catalyst / Notes:</strong><br>'+esc(d.catalyst||"—")+'</p>'+
+ '<div class="detail-actions"><button type="button" class="mini-btn edit" id="detailEdit">Edit Stock</button><button type="button" class="mini-btn delete" id="detailDelete">Delete Stock</button></div>'+
+ '</div>';
+ q("#detailEdit").addEventListener("click",()=>beginEdit(d.id));
+ q("#detailDelete").addEventListener("click",()=>deleteStock(d.id));
+}
+
+function render(){const rows=filtered();renderKpis(rows);renderChart(rows);renderTable(rows);renderBars(rows)}
+
+function formValues(){return{
+ ticker:q("#sTicker").value.trim().toUpperCase(),
+ company:q("#sCompany").value.trim(),
+ sector:q("#sSector").value.trim(),
+ status:q("#sStatus").value,
+ smartScore:Number(q("#sSmartScorePrimary").value),
+ investorTrend:q("#sInvestorPrimary").value,
+ hedgeFund:q("#sHedgePrimary").value,
+ price:Number(q("#sPrice").value)||0,
+ target:Number(q("#sTarget").value)||0,
+ forecast:q("#sForecast").value,
+ insider:q("#sInsider").value,
+ newsTrend:q("#sNewsTrend").value,
+ technicals:q("#sTechnicals").value,
+ momentum:Number(q("#sMomentum").value)||0,
+ roe:Number(q("#sROE").value)||0,
+ assetGrowth:Number(q("#sAssetGrowth").value)||0,
+ analystHigh:Number(q("#sAnalystHigh").value)||0,
+ analystAvg:Number(q("#sAnalystAvg").value)||0,
+ analystLow:Number(q("#sAnalystLow").value)||0,
+ thesis:q("#sThesis").value.trim(),
+ catalyst:q("#sCatalyst").value.trim()
+}}
+
+function beginEdit(id){
+ const d=data.find(x=>x.id===id);if(!d)return;
+ editingId=id;
+ q("#stockForm").classList.add("editing");
+ q("#stockFormTitle").textContent="Edit Stock Idea";
+ q("#stockSubmitBtn").textContent="Save Changes";
+ q("#sTicker").value=d.ticker;q("#sCompany").value=d.company;q("#sSector").value=d.sector;q("#sStatus").value=d.status;
+ q("#sSmartScorePrimary").value=d.smartScore||5;q("#sInvestorPrimary").value=d.investorTrend||"Negative";q("#sHedgePrimary").value=d.hedgeFund||"Negative";
+ q("#sPrice").value=d.price||"";q("#sTarget").value=d.target||"";q("#sForecast").value=d.forecast||"Neutral";q("#sInsider").value=d.insider||"Neutral";
+ q("#sNewsTrend").value=d.newsTrend||"Neutral";q("#sTechnicals").value=d.technicals||"Neutral";q("#sMomentum").value=d.momentum||"";q("#sROE").value=d.roe||"";
+ q("#sAssetGrowth").value=d.assetGrowth||"";q("#sAnalystHigh").value=d.analystHigh||"";q("#sAnalystAvg").value=d.analystAvg||"";q("#sAnalystLow").value=d.analystLow||"";
+ q("#sThesis").value=d.thesis;q("#sCatalyst").value=d.catalyst||"";
+ q("#stockMessage").textContent="Editing "+d.ticker+". Save changes to replace this entry.";
+ q("#stockForm").scrollIntoView({behavior:"smooth",block:"start"});
+}
+
+function cancelEdit(){
+ editingId=null;q("#stockForm").reset();q("#stockForm").classList.remove("editing");
+ q("#stockFormTitle").textContent="Add Stock Idea";q("#stockSubmitBtn").textContent="Add to Universe";q("#stockMessage").textContent="";
+}
+
+function deleteStock(id){
+ const idx=data.findIndex(d=>d.id===id);if(idx<0)return;
+ const removed=data[idx];if(!confirm("Delete "+removed.ticker+" from the stock universe?"))return;
+ data.splice(idx,1);if(editingId===id)cancelEdit();syncFilterOptions();render();renderDetail(data[0]||null);q("#stockMessage").textContent=removed.ticker+" deleted from this session.";
+}
+
+[search,sectorFilter,statusFilter,investorFilter].forEach(el=>el.addEventListener("input",render));
+q("#stockReset").addEventListener("click",()=>{search.value="";sectorFilter.value="";statusFilter.value="";investorFilter.value="";render()});
+q("#cancelEditBtn").addEventListener("click",cancelEdit);
+q("#stockForm").addEventListener("reset",()=>setTimeout(()=>{if(!editingId)q("#stockMessage").textContent=""},0));
+q("#stockForm").addEventListener("submit",e=>{
+ e.preventDefault();const values=formValues();
+ if(editingId){
+   const d=data.find(x=>x.id===editingId);Object.assign(d,values);
+   const selected={...d};cancelEdit();syncFilterOptions();render();renderDetail(selected);q("#stockMessage").textContent=selected.ticker+" updated for this session.";
+ }else{
+   const entry={id:"USR-"+Date.now(),...values};data.unshift(entry);syncFilterOptions();q("#stockForm").reset();q("#stockMessage").textContent="Added to your stock universe for this session.";
+   search.value="";sectorFilter.value="";statusFilter.value="";investorFilter.value="";render();renderDetail(entry);
+ }
+});
+syncFilterOptions();render();renderDetail(data[0]);+Number(d.currentValue).toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2}):'—')+'</td>'+
   '<td style="color:'+(statusColors[d.status]||"#fff")+'">'+esc(d.status)+'</td>'+
   '<td><div class="action-group"><button type="button" class="mini-btn edit" data-edit="'+d.id+'">Edit</button><button type="button" class="mini-btn delete" data-delete="'+d.id+'">Delete</button></div></td>'+
   '</tr>').join("");
